@@ -6,7 +6,9 @@ import {
   ImageBackground,
   TouchableOpacity,
   SafeAreaView,
-  Dimensions
+  Dimensions,
+  Platform,
+  StatusBar
 } from "react-native";
 import { Icon} from "../components";
 import { EvilIcons } from '@expo/vector-icons';
@@ -30,8 +32,8 @@ const Profile = () => {
   } = DEMO[7];
 
   return (
-    <SafeAreaView style={{flex:1}}>
-   
+    <SafeAreaView style={{flex:1,backgroundColor: '#010510', paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0 }}>
+           <StatusBar backgroundColor="#010510" barStyle="light-content" translucent={true} />
         <View>
       
          <ImageBackground

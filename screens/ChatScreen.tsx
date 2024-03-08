@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { View, Text, TouchableOpacity, TextInput, StyleSheet, KeyboardAvoidingView, Platform,PanResponder, Animated,Dimensions,Image} from "react-native";
+import { View, Text, TouchableOpacity, TextInput, StyleSheet, KeyboardAvoidingView, Platform,PanResponder, Animated,Dimensions,Image,StatusBar} from "react-native";
 import { Icon } from "../components";
 import styles from "../assets/styles";
 import ChatContainer from "../components/ChatContainer";
@@ -15,6 +15,8 @@ import { AntDesign } from '@expo/vector-icons';
 import { SimpleLineIcons } from '@expo/vector-icons';
 import { getStorage, ref as ref1,uploadBytes,getDownloadURL } from "firebase/storage";
 import { Audio } from 'expo-av';
+import { CommonActions } from '@react-navigation/native';
+import { NavigationProp } from '@react-navigation/native';
 const {height}=Dimensions.get('window')
 const chatHeight=height*0.15;
 const windowWidth = Dimensions.get('window').width;
@@ -31,8 +33,11 @@ type RootStackParamList = {
 };
 
 type ChatScreenRouteProp = RouteProp<RootStackParamList, 'ChatScreen'>;
-
-const ChatScreen = ({ route }: { route: ChatScreenRouteProp }) => {
+type ChatScreenProps = {
+  navigation: NavigationProp<any>;
+  route: ChatScreenRouteProp;
+};
+const ChatScreen = ({ route, navigation }: ChatScreenProps) =>  {
   const [message, setMessage] = useState('');
   const { userData } = useSelector((state: any) => state.User);
   const [allMessages, setAllMessages] = useState([]) as any;
@@ -128,26 +133,27 @@ const ChatScreen = ({ route }: { route: ChatScreenRouteProp }) => {
       mediaTypes: ImagePicker.MediaTypeOptions.All,
       allowsEditing: true,
       aspect: [4, 3],
-      quality: 1,
+      quality: 0.2,
     });
 
-    // console.log("The image result is:",result);
+    console.log("The image result is:",result);
 
     if (!result.canceled) {
-      console.log("The result is:",result)
+      console.log("The result is:",result.assets[0].type)
       if(result.assets[0].type==='image')
       {
         const imageUri = result.assets[0].uri;
         // Convert the URI to Blob
         const response = await fetch(imageUri);
         const blob = await response.blob();
+        const imageName = generateUniqueImageName('image');
           // Create a reference to the storage location where you want to upload the image
-       const storageRef = ref1(storage, 'images/' + result.assets[0].fileName);
+       const storageRef = ref1(storage, 'images/' + imageName);
         // Upload the image to Firebase Storage
         const snapshot = await uploadBytes(storageRef, blob);
         const downloadURL = await getDownloadURL(snapshot.ref);
        //  console.log('Image uploaded successfully. Download URL:', downloadURL);
-     //  for vedios
+     //  for vediosß
      
        await SendMessage(currentUserId, guestUserId, '',downloadURL,'','')
        .then(() => {
@@ -166,16 +172,16 @@ const ChatScreen = ({ route }: { route: ChatScreenRouteProp }) => {
        });
  
       }
-       else if(result.assets[0].type='video')
+       else if(result.assets[0].type==='video')
        {
         const videoUri = result.assets[0].uri
 
         // Convert the video URI to Blob
         const response = await fetch(videoUri);
         const blob = await response.blob();
-  
+        const videoName = generateUniqueImageName('video');
         // Create a reference to the storage location where you want to upload the video
-        const storageRef = ref1(storage, 'videos/' + result.assets[0].fileName);
+        const storageRef = ref1(storage, 'videos/' + videoName);
   
         // Upload the video to Firebase Storage
         const snapshot = await uploadBytes(storageRef, blob);
@@ -271,18 +277,23 @@ const ChatScreen = ({ route }: { route: ChatScreenRouteProp }) => {
     function generateUniqueFileName() {
       return 'audio_' + Date.now() + '.mp3';
     }
- 
+    function generateUniqueImageName(type: string) {
+      return type + '_' + Date.now() + '_' + Math.floor(Math.random() * 1000);
+  }
   return (
     <KeyboardAvoidingView
-      style={{ flex: 1}}
+      style={{ flex: 1 }}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       keyboardVerticalOffset={Platform.OS === "ios" ? 0 : -100}
+      
     >
+    
       <View style={chatStyles.container}>
+
         <View style={chatStyles.header}>
            <View style={chatStyles.headerContent}>
            <TouchableOpacity style={styles.circle}>
-        <AntDesign name="arrowleft" color={'#FFFFFF'} size={20} />
+        <AntDesign name="arrowleft" color={'#FFFFFF'} size={20} onPress={()=>navigation.dispatch(CommonActions.goBack())} />
           </TouchableOpacity>
           <Image source={require('../assets/images/chatProfile.png')} style={chatStyles.chatImage}/>
             <View>

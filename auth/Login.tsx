@@ -4,7 +4,6 @@ import { AntDesign } from '@expo/vector-icons';
 import { getDatabase, ref, onValue } from "firebase/database";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import app from '../config/firebaseConfig';
-import Toast from 'react-native-simple-toast';
 import { useDispatch } from 'react-redux';
 import { setUser } from '../redux/reducer/user';
 import Auth from '../service/Auth';
@@ -35,18 +34,7 @@ const Login = ({ navigation }:any) => {
     })
     const handleLogin = async () => {
       // navigation.navigate('Tab')
-        if(email==='')
-        {
-            Toast.show("Enter email",1000)
-        }
-        else if(password==='')
-        {
-          Toast.show("Enter password",1000)
-        }
-        else if(email.includes('@'))
-        {
-          Toast.show("Please enter valid email",1000)
-        }
+       
         await signInWithEmailAndPassword(auth, email, password)
             .then((userCredential) => {
                 const user = userCredential.user;
@@ -63,7 +51,7 @@ const Login = ({ navigation }:any) => {
             const userData = snapshot.val();
             dispatch(setUser(userData))
             Auth.setAccount(userData)
-            Toast.show('User Logged In Successfully', 2000);
+           
             navigation.navigate('Tab')
         });
     };

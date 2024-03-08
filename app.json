@@ -2,6 +2,7 @@
   "expo": {
     "name": "Today",
     "slug": "Today",
+    "scheme": "Today",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -15,7 +16,8 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.tinder.today"
     },
     "android": {
       "adaptiveIcon": {
@@ -27,9 +29,20 @@
     "web": {
       "favicon": "./assets/favicon.png"
     },
+    "plugins": [
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "custom photos permission",
+          "cameraPermission": "Allow $(PRODUCT_NAME) to open the camera",
+          "//": "Disables the microphone permission",
+          "microphonePermission": false
+        }
+      ]
+    ],
     "extra": {
       "eas": {
-        "projectId": "cb47c968-33ae-4e97-b672-0986bb461fb8"
+        "projectId": "fc816852-994e-4ac9-9c95-d4b58905c102"
       }
     }
   }

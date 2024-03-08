@@ -4,7 +4,6 @@ const windowWidth = Dimensions.get('window').width;
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 import { getDatabase, ref, set } from "firebase/database";
 import app from '../config/firebaseConfig';
-import Toast from 'react-native-simple-toast';
 import { LinearGradient } from 'expo-linear-gradient';
 import { AntDesign } from '@expo/vector-icons';
 const Signup = ({ navigation }:any) => {
@@ -31,7 +30,7 @@ const Signup = ({ navigation }:any) => {
             }
             set(ref(database, `users/${user.uid}`), data)
           .then(() => {
-            Toast.show('Registered Successfully',2000);
+         
             navigation.navigate('Login')
           })
           .catch((error) => {
@@ -44,7 +43,7 @@ const Signup = ({ navigation }:any) => {
           const errorCode = error.code;
           const errorMessage = error.message;
           console.log(errorMessage)
-          Toast.show('Error While Registration',2000);
+     
           // ..
         });
     };

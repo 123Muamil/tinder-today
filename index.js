@@ -1,5 +1,5 @@
 import React,{useEffect} from "react";
-import { NavigationContainer, useNavigationContainerRef } from '@react-navigation/native';
+import { NavigationContainer} from '@react-navigation/native';
 import { Home, Matches, Messages, Profile } from "./screens";
 import TabBarIcon from "./components/TabBarIcon";
 import ChatScreen from "./screens/ChatScreen";
@@ -20,8 +20,6 @@ import LocationSelector from "./screens/Location";
 import Keep_Posted from "./screens/Keep_Posted";
 import Privacy from "./screens/Privacy";
 const index = () => {
-    const navigationRef = useNavigationContainerRef(); 
-    const currentRoute = navigationRef.getCurrentRoute();
     const theme = useTheme();
   theme.colors.secondaryContainer = "transperent"
     // console.log("The current-route is:",route?.name)
@@ -40,7 +38,7 @@ const index = () => {
           }
       }
   return (
-    <NavigationContainer ref={navigationRef}>
+    <NavigationContainer >
     <Stack.Navigator  initialRouteName={!login?"Login":'Tab'} >
       <Stack.Screen
         name="Tab"

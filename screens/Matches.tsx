@@ -4,7 +4,9 @@ import {
   Text,
   TouchableOpacity,
   FlatList,
-  SafeAreaView
+  SafeAreaView,
+  StatusBar,
+  Platform
 } from "react-native";
 import { CardItem, Icon } from "../components";
 import DEMO from "../assets/data/demo";
@@ -14,7 +16,8 @@ import styles from "../assets/styles";
 
 const Matches = () => {
   return (
-    <SafeAreaView style={{flex:1}}>
+    <SafeAreaView style={{flex:1,backgroundColor: '#010510', paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0 }}>
+        <StatusBar backgroundColor="#010510" barStyle="light-content" translucent={true} />
     <View style={styles.containerMatches}>
       <View style={styles.top}>
         <Text style={styles.title}>Matches</Text>

@@ -1,5 +1,5 @@
 import React,{useEffect, useState} from "react";
-import { Text, TouchableOpacity, View, FlatList,SafeAreaView } from "react-native";
+import { Text, TouchableOpacity, View, FlatList,SafeAreaView,Platform,StatusBar } from "react-native";
 import { useNavigation } from "@react-navigation/native"; 
 import { Icon, Message } from "../components";
 import styles, { DARK_GRAY } from "../assets/styles";
@@ -37,7 +37,8 @@ const getAllUsers = async () => {
     });
 };
   return (
-    <SafeAreaView style={{flex:1}}>
+    <SafeAreaView style={{flex:1,backgroundColor: '#010510', paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0 }}>
+            <StatusBar backgroundColor="#010510" barStyle="light-content" translucent={true} />
       <View style={styles.containerMessages}>
         <View style={styles.top}>
         <TouchableOpacity>

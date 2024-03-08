@@ -10,7 +10,17 @@
     "preview": {
       "distribution": "internal"
     },
-    "production": {}
+    "production": {},
+    "simulator":{
+      "ios":{
+        "simulator":true
+      }
+    },
+    "androidapk":{
+      "android":{
+        "buildType":"apk"
+      }
+    }
   },
   "submit": {
     "production": {}
