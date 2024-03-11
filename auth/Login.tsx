@@ -1,18 +1,20 @@
 import React, { useState,useEffect } from 'react';
 import { View, Text, TextInput, StyleSheet, TouchableOpacity, Image ,Dimensions,ImageBackground,SafeAreaView,ScrollView} from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
-import { getDatabase, ref, onValue } from "firebase/database";
-import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import { getDatabase, ref, onValue,set } from "firebase/database";
+import { getAuth, signInWithEmailAndPassword,GoogleAuthProvider,signInWithCredential} from "firebase/auth";
 import app from '../config/firebaseConfig';
 import { useDispatch } from 'react-redux';
 import { setUser } from '../redux/reducer/user';
 import Auth from '../service/Auth';
 import { LinearGradient } from 'expo-linear-gradient';
-import * as WebBrowser from 'expo-web-browser'
-import * as Google from 'expo-auth-session/providers/google'
-import {makeRedirectUri} from 'expo-auth-session'
 const windowWidth = Dimensions.get('window').width;
-WebBrowser.maybeCompleteAuthSession()
+import * as AppleAuthentication from 'expo-apple-authentication';
+// import { GoogleSignin } from '@react-native-google-signin/google-signin';
+// GoogleSignin.configure({
+//   webClientId: '387288605049-btadl9uc77qirt3umdoijhajp7pp9idl.apps.googleusercontent.com',
+//   iosClientId:'384466588084-q9f2aq8qifaqo11071u71t9k4mobeifn.apps.googleusercontent.com',
+// });
 const Login = ({ navigation }:any) => {
     const db = getDatabase(app);
     const auth = getAuth(app);
@@ -22,16 +24,8 @@ const Login = ({ navigation }:any) => {
     const [accessToken,setAccessToken]=useState(null) as any
     const [user,set_User]=useState(null)
     const [passowrdShowHide,setPassordShowHide]=useState<boolean>(true)
-    const redirectUri = makeRedirectUri({
-      scheme: 'com.today.tinder-expo',
-      path: '/oauth2',
-      preferLocalhost: true  
-    });
-    const [request,response,promptAsync]=Google.useAuthRequest({
-      expoClientId:"384466588084-gh674aieta447ap50rat7ec6lg46hpop.apps.googleusercontent.com",
-      iosClientId:'384466588084-q9f2aq8qifaqo11071u71t9k4mobeifn.apps.googleusercontent.com',
-      androidClientId:'384466588084-eu511o3kqmh5cd2ldo0ajmeb0p1gfhh2.apps.googleusercontent.com',
-    })
+   
+   
     const handleLogin = async () => {
       // navigation.navigate('Tab')
        
@@ -51,29 +45,69 @@ const Login = ({ navigation }:any) => {
             const userData = snapshot.val();
             dispatch(setUser(userData))
             Auth.setAccount(userData)
-           
             navigation.navigate('Tab')
         });
     };
-useEffect(() => {
- if(response?.type==='success')
- {
-       setAccessToken(response.authentication?.accessToken) 
-       accessToken && fetchUserInfo()
- }
-}, [response,accessToken])
-const fetchUserInfo=async()=>{
-      let response=await fetch('https://www.googleapis.com/userinfo/v2/me',{
-        headers:{
-          Authorization:`Bearer ${accessToken}`
-        }
-      })
-       const userinfo=response.json() as any
-       console.log("The user info is:",userinfo)
-      if(userinfo)
+const GoogleLogin=async()=>{
+//  try {
+//   await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
+//   const {idToken}=await GoogleSignin.signIn()
+//   const googleCredential=GoogleAuthProvider.credential(idToken)
+//   await signInWithCredential(auth,googleCredential)
+//   const user=auth.currentUser
+//   if(user)
+//   {
+//     const data={
+//       uid:user.uid,
+//       email: user.email,
+//       displayName: user.displayName, 
+//       photoURL:user.photoURL
+//   }
+//   set(ref(db, `users/${user.uid}`), data)
+//   }
+//   if(user)
+//   {
+//     fetchUserData(user.uid);
+//   }
+ 
+  
+//  } catch (error) {
+//   console.log("Error while google login",error)
+//  }
+}
+const AppleLogin=async()=>{
+    try {
+     await AppleAuthentication.signInAsync({
+        requestedScopes: [
+          AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
+          AppleAuthentication.AppleAuthenticationScope.EMAIL,
+        ],
+      });
+      const user=auth.currentUser
+      if(user)
       {
-        navigation.navigate('Tab')
+        const data={
+          uid:user.uid,
+          email: user.email,
+          displayName: user.displayName, 
+          photoURL:user.photoURL
       }
+      set(ref(db, `users/${user.uid}`), data)
+      }
+      if(user)
+      {
+        fetchUserData(user.uid);
+      }
+     
+   } catch (e) {
+    if (e.code === 'ERR_REQUEST_CANCELED') {
+      // Handle the scenario when the user cancels the sign-in flow
+      console.log('User canceled the sign-in flow');
+    } else {
+      // Handle other errors
+      console.error('Error occurred during sign-in:', e.message);
+    }
+  }
 }
 // Rotate Image to passowrd show and hide
 const visibilityStyle = {
@@ -132,12 +166,10 @@ const visibilityStyle = {
                             <View style={styles.line}></View>
                         </View>
                         <View style={styles.buttonContainer}>
-                            <TouchableOpacity style={styles.authButton}>
+                            <TouchableOpacity style={styles.authButton} onPress={AppleLogin}>
                                 <AntDesign name="apple1" size={24} color="#FFFFFF" />
                             </TouchableOpacity>
-                            <TouchableOpacity style={styles.authButton} onPress={()=>{
-                              promptAsync()
-                            }}>
+                            <TouchableOpacity style={styles.authButton} onPress={GoogleLogin}>
                                 <AntDesign name="google" size={24} color="#FFFFFF" />
                             </TouchableOpacity>
                         </View>

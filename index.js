@@ -1,5 +1,5 @@
 import React,{useEffect} from "react";
-import { NavigationContainer} from '@react-navigation/native';
+import { NavigationContainer,DefaultTheme} from '@react-navigation/native';
 import { Home, Matches, Messages, Profile } from "./screens";
 import TabBarIcon from "./components/TabBarIcon";
 import ChatScreen from "./screens/ChatScreen";
@@ -19,6 +19,13 @@ import Add_Photos from "./screens/Add_Photos";
 import LocationSelector from "./screens/Location";
 import Keep_Posted from "./screens/Keep_Posted";
 import Privacy from "./screens/Privacy";
+const MyTheme = {
+  ...DefaultTheme,
+  colors: {
+    ...DefaultTheme.colors,
+    background: '#010510',
+  },
+};
 const index = () => {
     const theme = useTheme();
   theme.colors.secondaryContainer = "transperent"
@@ -38,7 +45,7 @@ const index = () => {
           }
       }
   return (
-    <NavigationContainer >
+    <NavigationContainer theme={MyTheme}>
     <Stack.Navigator  initialRouteName={!login?"Login":'Tab'} >
       <Stack.Screen
         name="Tab"

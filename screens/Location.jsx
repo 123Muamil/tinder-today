@@ -1,38 +1,57 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet,StatusBar,Platform,ScrollView,Dimensions,SafeAreaView } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
 import * as Location from 'expo-location';
-import { Entypo } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
+import { AntDesign } from '@expo/vector-icons';
+import { EvilIcons } from '@expo/vector-icons';
 const screenWidth=Dimensions.get('window').width;
 const {height}=Dimensions.get('window')
 const headerHeight=height*0.1;
 const LocationSelector = ({navigation}) => {
-  const [locationEnabled, setLocationEnabled] = useState(false);
-  const enableLocation = async () => {
-    let { status } = await Location.requestForegroundPermissionsAsync();
-    if (status !== 'granted') {
-      console.error('Permission to access location was denied');
-      return;
-    }
-    setLocationEnabled(true);
-  };
+  const [location, setLocation] = useState(null);
+  const [errorMsg, setErrorMsg] = useState(null);
+const GetLocation=async()=>{
+  let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        setErrorMsg('Permission to access location was denied');
+        return;
+      }
 
+      let location = await Location.getCurrentPositionAsync({});
+      setLocation(location);
+}
+let text = 'Waiting..';
+if (errorMsg) {
+  text = errorMsg;
+} else if (location) {
+  text = JSON.stringify(location);
+}
   return (
    <SafeAreaView style={styles.Container}>
-   <StatusBar backgroundColor="red" translucent={true} />
+   <StatusBar backgroundColor="#010510" translucent={true} />
+   <LinearGradient
+        colors={['rgba(71, 77, 239, 0.20)', 'rgba(71, 77, 239, 0.40)', 'rgba(10, 13, 71, 0.40)', 'rgba(10, 13, 71, 0.20)']}
+        start={[0.5, 0]}
+        end={[0.5, 1]}
+      >
           <View style={styles.header}>
-      <TouchableOpacity onPress={()=>navigation.goBack()}>
-      <Entypo name="chevron-left" size={24} color="#d6d9ec" style={styles.headerIcon} />
+        
+      <TouchableOpacity style={{width:40,height:40,borderRadius:50,backgroundColor:'rgba(63, 80, 124, 0.16)',justifyContent:'center',alignItems:'center'}} onPress={()=>navigation.goBack()}>
+      <AntDesign  name="arrowleft" size={20} color="#FFFFFF" style={styles.headerIcon} />
       </TouchableOpacity>
-      <TouchableOpacity>
+      <TouchableOpacity style={styles.headerTextContainer} onPress={()=>navigation.navigate('keep_posted')}>
       <Text style={styles.headerText}>skip</Text>
+  <View style={styles.line} />
+      
       </TouchableOpacity>
+    
       </View>
+      </LinearGradient>
+      <View style={{flex:1}}>
       <ScrollView style={styles.content}>
       <View style={styles.container}>
       <View style={styles.circle}>
-      <MaterialIcons name="location-on" size={60} color="#FFF" />
-   
+      <EvilIcons name="location" size={60} color="#FFFFFF" />
       </View>
       <View style={styles.textContainer}>
         <Text style={styles.heading}>Enable Location</Text>
@@ -43,16 +62,19 @@ const LocationSelector = ({navigation}) => {
       </View>
       
     </View>
-   <View style={{marginTop:'50%'}}>
-          <TouchableOpacity style={styles.button} onPress={()=>navigation.navigate('keep_posted')}>
+  
+      </ScrollView>
+      <View style={{marginBottom:'25%',marginTop:10}}>
+          <TouchableOpacity style={styles.button} onPress={GetLocation}>
+          {/* ()=>navigation.navigate('keep_posted') */}
             <Text style={styles.buttonText}>ALLOW LOCATION</Text>
           </TouchableOpacity>
         <TouchableOpacity style={styles.moreContainer}>
           <Text style={styles.moreText}>TELL ME MORE</Text>
-          <Entypo name="chevron-small-down" size={24} color="#d4d7e6" />
+      
         </TouchableOpacity>
    </View>
-      </ScrollView>
+      </View>
    </SafeAreaView>
   );
 };
@@ -64,20 +86,22 @@ const styles = StyleSheet.create({
   },
   header:{
     width:screenWidth,
-    height:headerHeight,
-    flexDirection:'row',
-    justifyContent:'space-between',
-    backgroundColor:'#FFF'
+      height:headerHeight,
+      flexDirection:'row',
+      justifyContent:'space-between',
+      alignItems:'center',
    },
    headerIcon:{
         padding:'5%',
    },
    headerText:{
-    padding:'5%',
+    paddingRight:'5%',
+    color:'#FFFFFF'
    },
    content: {
     flex: 1, 
-    backgroundColor: 'white', 
+    backgroundColor: '#010510', 
+    marginTop:'15%'
   },
   container: {
     flex: 1,
@@ -87,51 +111,80 @@ const styles = StyleSheet.create({
   circle: {
     width: 150,
     height: 150,
-    borderRadius: 75,
-    backgroundColor: '#f3f4f7',
-    justifyContent: 'center',
-    alignItems: 'center',
+    borderRadius: 100,
+    backgroundColor: 'rgba(12, 20, 40, 0.24)',
+    borderWidth: 1,
+    borderColor: '#434978',
+    justifyContent:'center',
+    alignItems:'center'
   },
   textContainer: {
     marginTop: 20,
   },
   heading: {
+    color: '#FFF',
     fontSize: 20,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    color:"#515151"
+    fontStyle: 'normal',
+    fontWeight: '500',
+    alignSelf:'center',
+    marginBottom:10
   },
   paragraph: {
    
-    marginVertical: 10,
-    paddingHorizontal:'20%',
-    color:'#d2c9c9'
+    color: '#D0D9F9',
+    textAlign: 'center',
+    fontSize: 14,
+    fontStyle: 'normal',
+    fontWeight: '400',
   },
   button: {
-    backgroundColor:"#d53a3f",
-    padding:16,
-    borderRadius:40,
-    justifyContent:'center',
-    alignItems:'center',
-    marginHorizontal:'10%'
+    height: 60,
+    padding: 16,
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    alignSelf: 'stretch',
+    borderRadius: 32,
+    backgroundColor: '#474DEF',
   },
   buttonText: {
-    color: '#FFF',
-    fontSize: 16,
+    color: '#FFFFFF',
+    fontSize: 20,
+    fontStyle: 'normal',
+    fontWeight: '500',
   },
   locationText: {
     fontSize: 16,
     marginTop: 10,
   },
   moreContainer: {
-    flexDirection: 'row',
+    height: 60,
+    padding: 16,
+    flexDirection: 'column',
+    justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 20,
-    justifyContent:'center'
+    alignSelf: 'stretch',
+    borderRadius: 32,
+    borderWidth: 1,
+    borderColor: '#474DEF',
+    marginTop:15,
   },
   moreText: {
-    marginRight: 5,
-    color:'#d4d7e6'
+    color: '#474DEF',
+    fontSize: 18,
+    fontStyle: 'normal',
+    fontWeight: '700',
+  },
+  headerTextContainer: {
+    flexDirection: 'column',
+    alignItems: 'center',
+  },
+  line: {
+    width: 25,
+    height: 1,
+    backgroundColor: '#FFFFFF',
+    alignSelf:'center',
+    marginRight:20    ,
   },
 });
 

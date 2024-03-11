@@ -1,22 +1,33 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet,StatusBar,Platform,ScrollView,Dimensions,SafeAreaView } from 'react-native';
-import { Entypo } from '@expo/vector-icons';
 import { MaterialIcons } from '@expo/vector-icons';
 const screenWidth=Dimensions.get('window').width;
 const {height}=Dimensions.get('window')
 const headerHeight=height*0.1;
+import { LinearGradient } from 'expo-linear-gradient';
+import { AntDesign } from '@expo/vector-icons';
 const Privacy = ({navigation}:any) => {
   return (
     <SafeAreaView style={styles.Container}>
-    <StatusBar backgroundColor="red" translucent={true} />
-           <View style={styles.header}>
-       <TouchableOpacity onPress={()=>navigation.goBack()}>
-       <Entypo name="chevron-left" size={24} color="#d6d9ec" style={styles.headerIcon} />
-       </TouchableOpacity>
-       <TouchableOpacity>
-       <Text style={styles.headerText}>skip</Text>
-       </TouchableOpacity>
-       </View>
+    <StatusBar backgroundColor="#010510" translucent={true} />
+    <LinearGradient
+        colors={['rgba(71, 77, 239, 0.20)', 'rgba(71, 77, 239, 0.40)', 'rgba(10, 13, 71, 0.40)', 'rgba(10, 13, 71, 0.20)']}
+        start={[0.5, 0]}
+        end={[0.5, 1]}
+      >
+          <View style={styles.header}>
+        
+      <TouchableOpacity style={{width:40,height:40,borderRadius:50,backgroundColor:'rgba(63, 80, 124, 0.16)',justifyContent:'center',alignItems:'center'}} onPress={()=>navigation.goBack()}>
+      <AntDesign  name="arrowleft" size={20} color="#FFFFFF" style={styles.headerIcon} />
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.headerTextContainer} onPress={()=>navigation.navigate('privacy')}>
+      <Text style={styles.headerText}>skip</Text>
+  <View style={styles.line} />
+      
+      </TouchableOpacity>
+    
+      </View>
+      </LinearGradient>
        <ScrollView style={styles.content}>
        <View style={styles.container}>
        <View style={styles.circle}>
@@ -36,8 +47,8 @@ const Privacy = ({navigation}:any) => {
            <TouchableOpacity style={styles.button} onPress={()=>navigation.navigate('')}>
              <Text style={styles.buttonText}>I ACCEPT</Text>
            </TouchableOpacity>
-         <TouchableOpacity style={[styles.button,{marginTop:20,}]}>
-         <Text style={styles.buttonText}>PERSONALISE</Text>
+         <TouchableOpacity style={[styles.moreContainer,{marginTop:20,}]}>
+         <Text style={styles.moreText}>PERSONALISE</Text>
          </TouchableOpacity>
     </View>
        </ScrollView>
@@ -57,17 +68,19 @@ const styles = StyleSheet.create({
       height:headerHeight,
       flexDirection:'row',
       justifyContent:'space-between',
-      backgroundColor:'#FFF'
+      alignItems:'center',
      },
      headerIcon:{
           padding:'5%',
      },
      headerText:{
-      padding:'5%',
+      paddingRight:'5%',
+      color:'#FFFFFF'
      },
      content: {
       flex: 1, 
-      backgroundColor: 'white', 
+      backgroundColor: '#010510', 
+    marginTop:'15%'
     },
     container: {
       flex: 1,
@@ -77,50 +90,78 @@ const styles = StyleSheet.create({
     circle: {
       width: 150,
       height: 150,
-      borderRadius: 75,
-      backgroundColor: '#f3f4f7',
-      justifyContent: 'center',
-      alignItems: 'center',
+      borderRadius: 100,
+      backgroundColor: 'rgba(12, 20, 40, 0.24)',
+      borderWidth: 1,
+      borderColor: '#434978',
+      justifyContent:'center',
+      alignItems:'center'
     },
     textContainer: {
       marginTop: 20,
     },
     heading: {
+      color: '#FFF',
       fontSize: 20,
-      fontWeight: 'bold',
-      textAlign: 'center',
-      color:"#515151"
+      fontStyle: 'normal',
+      fontWeight: '500',
+      alignSelf:'center',
+      marginBottom:10
     },
     paragraph: {
-     
-      marginVertical: 10,
-      paddingHorizontal:'10%',
-      color:'#d2c9c9'
+      color: '#D0D9F9',
+      textAlign: 'center',
+      fontSize: 14,
+      fontStyle: 'normal',
+      fontWeight: '400',
     },
     button: {
-      backgroundColor:"#d53a3f",
-      padding:16,
-      borderRadius:40,
-      justifyContent:'center',
-      alignItems:'center',
-      marginHorizontal:'10%'
+      height: 60,
+      padding: 16,
+      flexDirection: 'column',
+      justifyContent: 'center',
+      alignItems: 'center',
+      alignSelf: 'stretch',
+      borderRadius: 32,
+      backgroundColor: '#474DEF',
     },
     buttonText: {
-      color: '#FFF',
-      fontSize: 16,
+      color: '#FFFFFF',
+      fontSize: 20,
+      fontStyle: 'normal',
+      fontWeight: '500',
     },
     locationText: {
       fontSize: 16,
       marginTop: 10,
     },
     moreContainer: {
-      flexDirection: 'row',
+      height: 60,
+      padding: 16,
+      flexDirection: 'column',
+      justifyContent: 'center',
       alignItems: 'center',
-      marginTop: 20,
-      justifyContent:'center'
+      alignSelf: 'stretch',
+      borderRadius: 32,
+      borderWidth: 1,
+      borderColor: '#474DEF',
+      marginTop:15,
     },
     moreText: {
-      marginRight: 5,
-      color:'#d4d7e6'
+      color: '#474DEF',
+      fontSize: 18,
+      fontStyle: 'normal',
+      fontWeight: '700',
+    },
+    headerTextContainer: {
+      flexDirection: 'column',
+      alignItems: 'center',
+    },
+    line: {
+      width: 25,
+      height: 1,
+      backgroundColor: '#FFFFFF',
+      alignSelf:'center',
+      marginRight:20    ,
     },
   });

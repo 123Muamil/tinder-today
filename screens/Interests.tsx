@@ -1,35 +1,26 @@
 import { StyleSheet, Text, View,Dimensions,SafeAreaView,Platform,StatusBar,TouchableOpacity,ScrollView } from 'react-native'
 import React,{useState} from 'react'
-import { Entypo } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
+import { AntDesign } from '@expo/vector-icons';
 const screenWidth=Dimensions.get('window').width;
 const {height}=Dimensions.get('window')
 const headerHeight=height*0.1;
 const Interests = ({ navigation }:any) => {
     const [selectedInterests, setSelectedInterests] = useState([]) as any;
-
     const interests = [
       "Harry Potter",
       "90s Kid",
       "SoundCloud",
       "Spa",
       "Self-care",
-      "Heavy mental",
-      "House parties",
-      "Gin & tonic",
-      "Gymnastics",
-      "Hot yoga",
-      "Meditation",
-      "Spotify",
-      "Sushi",
-      "Hockey",
       "Basketball",
       "Stam Poetry",
       "Home workouts",
-      "Theatre",
-      "Trainers",
-      "Instagram",
       "Hot springs",
-      "Walking"
+      "Walking",
+      "Hot springs",
+      "Walking",
+      
     ];
     const handleInterestToggle = (interest:any) => {
         const index = selectedInterests.indexOf(interest);
@@ -44,50 +35,79 @@ const Interests = ({ navigation }:any) => {
     
   return (
     <SafeAreaView style={styles.container}>
-          <StatusBar backgroundColor="red" translucent={true} />
+          <StatusBar backgroundColor="#010510" translucent={true} />
+          <LinearGradient
+        colors={['rgba(71, 77, 239, 0.20)', 'rgba(71, 77, 239, 0.40)', 'rgba(10, 13, 71, 0.40)', 'rgba(10, 13, 71, 0.20)']}
+        start={[0.5, 0]}
+        end={[0.5, 1]}
+      >
           <View style={styles.header}>
-      <TouchableOpacity onPress={()=>navigation.goBack()}>
-      <Entypo name="chevron-left" size={24} color="#d6d9ec" style={styles.headerIcon} />
+        
+      <TouchableOpacity style={{width:40,height:40,borderRadius:50,backgroundColor:'rgba(63, 80, 124, 0.16)',justifyContent:'center',alignItems:'center'}} onPress={()=>navigation.goBack()}>
+      <AntDesign  name="arrowleft" size={20} color="#FFFFFF" style={styles.headerIcon} />
       </TouchableOpacity>
-      <TouchableOpacity>
+      <TouchableOpacity style={styles.headerTextContainer} onPress={()=>navigation.navigate('add_photos')}>
       <Text style={styles.headerText}>skip</Text>
-     
+  <View style={styles.line} />
+      
       </TouchableOpacity>
+    
       </View>
-
+      </LinearGradient>
       {/* Your content */}
+      <View style={{flex:1}}>
       <ScrollView style={styles.content}>
+     
        <Text style={styles.heading}>
         Interests
        </Text>
        <Text style={styles.paragraph}>Let everyone know what you're interested in by adding to your profile</Text>
        <View style={{ flex: 1, padding: 20 }}>
-      <View style={{ flexDirection: 'row', flexWrap: 'wrap', marginBottom: 20 }}>
+      <View style={{ flexDirection: 'row', flexWrap: 'wrap',justifyContent:'center',alignItems:'center'}}>
         {interests.map((interest, index) => (
+          
           <TouchableOpacity
             key={index}
             style={{
-              padding: 10,
-              backgroundColor: '#FFF',
-              borderRadius: 30,
-              margin: 5,
-              borderWidth:2,
-              borderColor:selectedInterests.includes(interest) ? '#f9c4cd' : 'grey'
+              width: 100,
+              height:100,
+              backgroundColor: 'rgba(13, 21, 43, 0.40)',
+              borderRadius: 50,
+              marginRight: '2%',
+              borderWidth: 1,
+              marginBottom:'4%',
+              justifyContent:'center',
+              alignItems:"center",
+              borderColor:selectedInterests.includes(interest) ? '#474DEF' : '#283455'
             }}
             onPress={() => handleInterestToggle(interest)}
           >
-            <Text style={{ color: selectedInterests.includes(interest) ? '#f9c4cd' : 'grey', }}>{interest}</Text>
+         
+         <LinearGradient
+                  colors={selectedInterests.includes(interest) ? ['rgba(71, 77, 239, 0.60)', 'rgba(10, 13, 71, 0.60)'] : ['rgba(13, 21, 43, 0.40)', 'rgba(13, 21, 43, 0.40)']}
+                  style={{
+                    width: 100,
+                    height: 100,
+                    borderRadius: 50,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                  }}>
+                  <Text style={{ color: selectedInterests.includes(interest) ? '#D0D9F9' : 'grey', }}>{interest}</Text>
+                </LinearGradient>
+        
           </TouchableOpacity>
         ))}
       </View>
       <View>
        
-          <TouchableOpacity style={styles.selectButton} onPress={()=>navigation.navigate('add_photos')}>
-          <Text style={{color:"#FFF"}}>CONTINUE {selectedInterests.length}/22</Text>
-          </TouchableOpacity>
+       
       </View>
     </View>
       </ScrollView>
+      <TouchableOpacity style={styles.selectButton} onPress={()=>navigation.navigate('add_photos')}>
+          <Text style={{color:"#FFFFFF"}}>CONTINUE {selectedInterests.length}/22</Text>
+          </TouchableOpacity>
+      </View>
     </SafeAreaView>
   )
 }
@@ -104,32 +124,54 @@ const styles = StyleSheet.create({
     height:headerHeight,
     flexDirection:'row',
     justifyContent:'space-between',
-    backgroundColor:'#FFF'
+    alignItems:'center'
+  
    },
    headerIcon:{
         padding:'5%',
    },
    headerText:{
-    padding:'5%',
+    paddingRight:'5%',
+    color:'#FFFFFF'
    },
    content: {
     flex: 1, 
-    backgroundColor: 'white', 
+   
   },
   heading:{
-        color:'black',
-        fontSize:24,
-        marginLeft:'10%',
-        fontWeight:'bold',
+    color: '#FFF',
+    fontSize: 20,
+    fontStyle: 'normal',
+    fontWeight: '500',
+    alignSelf: 'center',
+    marginBottom:10,
   },
   paragraph:{
     marginHorizontal:'10%',
+    color: '#D0D9F9',
+    textAlign: 'center',
+    fontSize: 14,
+    fontStyle: 'normal',
+    fontWeight: '400',
   },
   selectButton:{
-    backgroundColor:"#d53a3f",
+    backgroundColor:"#474DEF",
     padding:16,
-    borderRadius:40,
+    borderRadius:32,
     justifyContent:'center',
-    alignItems:'center'
-  }
+    alignItems:'center',
+    marginBottom:'5%',
+  },
+  headerTextContainer: {
+    flexDirection: 'column',
+    alignItems: 'center',
+  },
+  line: {
+    width: 25,
+    height: 1,
+    backgroundColor: '#FFFFFF',
+    alignSelf:'center',
+    marginRight:20    ,
+  },
+ 
 })
