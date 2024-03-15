@@ -1,12 +1,16 @@
 import { StyleSheet, Text, View,Dimensions,SafeAreaView,Platform,StatusBar,TouchableOpacity,ScrollView } from 'react-native'
-import React,{useState} from 'react'
+import React,{useState,useContext} from 'react'
 import { LinearGradient } from 'expo-linear-gradient';
 import { AntDesign } from '@expo/vector-icons';
 const screenWidth=Dimensions.get('window').width;
 const {height}=Dimensions.get('window')
 const headerHeight=height*0.1;
+import { dataContext } from '../redux/context/context';
 const Interests = ({ navigation }:any) => {
+  const {fullData,setFullData}=useContext(dataContext) as any
     const [selectedInterests, setSelectedInterests] = useState([]) as any;
+    console.log("The console is:",selectedInterests)
+    setFullData(selectedInterests)
     const interests = [
       "Harry Potter",
       "90s Kid",

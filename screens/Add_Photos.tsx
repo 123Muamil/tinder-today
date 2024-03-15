@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View,SafeAreaView,StatusBar,TouchableOpacity,Dimensions,Platform,ScrollView,Image } from 'react-native'
-import React,{useState,useEffect} from 'react'
+import React,{useState,useContext} from 'react'
 import { AntDesign } from '@expo/vector-icons';
 const screenWidth=Dimensions.get('window').width;
 const {height}=Dimensions.get('window')
@@ -8,12 +8,17 @@ import * as ImagePicker from 'expo-image-picker';
 import { LinearGradient } from 'expo-linear-gradient';
 import { EvilIcons } from '@expo/vector-icons';
 import { DraggableGrid } from 'react-native-draggable-grid';
+import { dataContext } from '../redux/context/context';
 interface MyTestProps {}
 interface MyTestState {
   data: { key: string; image: string }[];
 }
 const Add_Photos:React.FC<MyTestProps> = ({ navigation }:any) => {
   const [data, setData] = useState<MyTestState['data']>([]);
+  console.log("The images are:",data)
+  const {fullData,setFullData}=useContext(dataContext) as any
+  // setFullData((fullData: any)=>[...fullData,data])
+  
   // console.log("The data is:",data) this data is send to next
   const render_item = (item: { image: string; key: string }) => {
     return (
@@ -47,6 +52,7 @@ const Add_Photos:React.FC<MyTestProps> = ({ navigation }:any) => {
 
         if (newImages.length > 0) {
             setData([...data, ...newImages]);
+            setFullData((prevFullData: any) => [...prevFullData, ...newImages]);
         }
     }
 };

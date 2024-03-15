@@ -19,6 +19,7 @@ import Add_Photos from "./screens/Add_Photos";
 import LocationSelector from "./screens/Location";
 import Keep_Posted from "./screens/Keep_Posted";
 import Privacy from "./screens/Privacy";
+import Test from './screens/Test'
 const MyTheme = {
   ...DefaultTheme,
   colors: {
@@ -128,6 +129,7 @@ const index = () => {
       <Stack.Screen name="location" component={LocationSelector} options={{headerShown:false}}/>
       <Stack.Screen name="keep_posted" component={Keep_Posted} options={{headerShown:false}}/>
       <Stack.Screen name="privacy" component={Privacy} options={{headerShown:false}}/>
+      <Stack.Screen name="test" component={Test}/>
     </Stack.Navigator>
     </NavigationContainer>
   )

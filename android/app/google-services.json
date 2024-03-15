@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "387288605049",
+    "firebase_url": "https://today-87402-default-rtdb.firebaseio.com",
+    "project_id": "today-87402",
+    "storage_bucket": "today-87402.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:387288605049:android:9e6023f5d2f21e1459cfa8",
+        "android_client_info": {
+          "package_name": "com.tinder.today"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "387288605049-vlpq129cmq0fbmfativiaaegk63ntbev.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.tinder.today",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "387288605049-btadl9uc77qirt3umdoijhajp7pp9idl.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC9qOrAlb11SrbCVCWrUU-Tww_YhiSOSuQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "387288605049-btadl9uc77qirt3umdoijhajp7pp9idl.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "387288605049-bg9ep262q1nh0jd67i68ijmt6ngkphqj.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "org.reactjs.native.example.tinder-today"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

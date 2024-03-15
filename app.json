@@ -18,19 +18,35 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.tinder.today",
-      "usesAppleSignIn": true
+      "usesAppleSignIn": true,
+      "config":{
+        "googleMapsApiKey":"AIzaSyCcsrzXmvDyN7CylFIEWkYtX2H1llhu1nc"
+      }
+     
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.tinder.today"
+      "package": "com.tinder.today",
+      "googleServicesFile": "./google-services.json",
+      "config":{
+        "googleMaps":{
+          "apiKey": "AIzaSyBHyRRR567im1c7Vhht63Tdvucn_aZk5_Y"
+        }
+      }
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Allow $(PRODUCT_NAME) to use your location."
+        }
+      ],
       [
         "expo-image-picker",
         {
@@ -40,7 +56,9 @@
           "microphonePermission": false
         }
       ],
-      "expo-apple-authentication"
+      "expo-apple-authentication",
+      "@react-native-google-signin/google-signin"
+     
     ],
     "extra": {
       "eas": {
