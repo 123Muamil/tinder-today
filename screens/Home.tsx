@@ -1,4 +1,4 @@
-import React,{useRef,useState} from "react";
+import React,{useRef,useState,useEffect} from "react";
 import { View, Text, Image, TouchableOpacity, SafeAreaView, StyleSheet, StatusBar, Platform, Dimensions } from "react-native";
 import Swiper from "react-native-deck-swiper";
 import DEMO from "../assets/data/demo";
@@ -6,9 +6,46 @@ const { height } = Dimensions.get("window");
 import  EvilIcons  from 'react-native-vector-icons/EvilIcons';
 import  Entypo  from 'react-native-vector-icons/Entypo';
 import AntDesign from 'react-native-vector-icons/AntDesign';
+import { getDatabase, ref, onValue } from "firebase/database";
+import { getAuth } from 'firebase/auth';
+const auth = getAuth();
+const currentUser=auth.currentUser;
+import MatchingAlgorithm from "../config/MatchingAlgorithm";
 const Home = () => {
     const swiperRef = useRef(null) as any;
      const [showLikeButton, setShowLikeButton] = useState(false);
+     const [allUsers, setAllUsers] = useState([]);
+  // console.log("The all users are:", allUsers);
+  // const matchScores = MatchingAlgorithm(currentUser, allUsers);
+  // console.log("The matches score are:",matchScores)
+  useEffect(() => {
+    const database = getDatabase();
+    const usersRef = ref(database, 'users');
+
+    const fetchAllUsers = async () => {
+      try {
+        onValue(usersRef, (snapshot) => {
+          const usersData = snapshot.val();
+          if (usersData) {
+            const allUsersArray = Object.values(usersData);
+            // Filter out the current user
+            const filteredUsers = allUsersArray.filter((user:any) => user.uid !== currentUser.uid);
+            setAllUsers(filteredUsers);
+          }
+        });
+      } catch (error) {
+        console.error('Error fetching all users:', error);
+      }
+    };
+
+    fetchAllUsers();
+
+    // Clean up the event listener when the component unmounts
+    return () => {
+      // Detach the onValue event listener
+      onValue(usersRef, null);
+    };
+  }, []); // Removed currentUser from dependency array
   const renderCard = (item:any) => {
     return (
       <View style={styles.card}>

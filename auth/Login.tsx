@@ -1,7 +1,7 @@
 import React, { useState,useEffect } from 'react';
 import { View, Text, TextInput, StyleSheet, TouchableOpacity, Image ,Dimensions,ImageBackground,SafeAreaView,ScrollView} from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
-import { getDatabase, ref, onValue,set } from "firebase/database";
+import { getDatabase, ref, onValue,set,get } from "firebase/database";
 import { getAuth, signInWithEmailAndPassword,GoogleAuthProvider,signInWithCredential} from "firebase/auth";
 import app from '../config/firebaseConfig';
 import { useDispatch } from 'react-redux';
@@ -23,16 +23,34 @@ const Login = ({ navigation }:any) => {
     const [password, setPassword] = useState('');
     const [accessToken,setAccessToken]=useState(null) as any
     const [user,set_User]=useState(null)
+    const [userData, setUserData] = useState(null);
+    const [userId, setUserId] = useState(null);
     const [passowrdShowHide,setPassordShowHide]=useState<boolean>(true)
-   
-   
+     console.log("The user data is:",userData)
+    useEffect(() => {
+      const fetchData = async () => {
+        try {
+          const snapshot = await get(ref(db, `users/${userId}`));
+          if (snapshot.exists()) {
+            setUserData(snapshot.val());
+          } else {
+            console.log('No data found for user with ID:', userId);
+          }
+        } catch (error) {
+          console.error('Error fetching user data:', error);
+        }
+      };
+  
+      if (userId) {
+        fetchData();
+      }
+    }, [userId]);
     const handleLogin = async () => {
-      // navigation.navigate('Tab')
-       
         await signInWithEmailAndPassword(auth, email, password)
             .then((userCredential) => {
                 const user = userCredential.user;
                 fetchUserData(user.uid);
+                
             })
             .catch((error) => {
                 console.error('Error logging in:', error.message);
@@ -45,6 +63,9 @@ const Login = ({ navigation }:any) => {
             const userData = snapshot.val();
             dispatch(setUser(userData))
             Auth.setAccount(userData)
+            setUserId(userId)
+            setEmail('');
+            setPassword('');
             navigation.navigate('Tab')
         });
     };
@@ -123,9 +144,10 @@ const visibilityStyle = {
                     end={{ x: 1, y: 0 }}
                 >
                     <ImageBackground source={require('../assets/images/login.png')} style={styles.imageContianer}>
-                        <Image source={require('../assets/images/logo.png')} style={styles.logoImage} />
+                        <Image source={require('../assets/today_logo.png')} style={styles.logoImage} />
                         <Text style={styles.welcomeText}>Welcome!</Text>
-                        <Text style={styles.LOGOText}>LOGO</Text>
+                    
+                       
                     </ImageBackground>
                     <View style={styles.authContianer}>
                         <Text style={styles.authText}>Email Id</Text>
@@ -137,6 +159,7 @@ const visibilityStyle = {
                                 placeholderTextColor="#757A8D"
                                 onChangeText={setEmail}
                                 keyboardType='email-address'
+                                value={email}
                             />
                         </View>
                         <Text style={styles.authText}>Password</Text>
@@ -149,6 +172,7 @@ const visibilityStyle = {
                                 onChangeText={setPassword}
                                 keyboardType="default"
                                 secureTextEntry={passowrdShowHide}
+                                value={password}
                             />
                            <TouchableOpacity onPress={()=>setPassordShowHide(!passowrdShowHide)}>
                            <Image source={require('../assets/hideshow.png')}  style={visibilityStyle}/>
@@ -207,6 +231,9 @@ const styles = StyleSheet.create({
   },
   logoImage:{
     marginTop:90,
+    width: 120,
+   height: 120,
+
   },
   welcomeText: {
     color: '#FFF',
@@ -216,6 +243,9 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   LOGOText: {
+    width: 275,
+height: 315.703,
+flexShrink: 0,
     position: 'absolute',
     left: 150,
     top: 140,
@@ -225,6 +255,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontStyle: 'normal',
     fontWeight: '500', 
+
 },
 authContianer:{
   width:windowWidth,

@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View,SafeAreaView,StatusBar,TouchableOpacity,Dimensions,Platform,ScrollView,Image } from 'react-native'
-import React,{useState,useContext} from 'react'
+import React,{useState} from 'react'
 import { AntDesign } from '@expo/vector-icons';
 const screenWidth=Dimensions.get('window').width;
 const {height}=Dimensions.get('window')
@@ -8,18 +8,22 @@ import * as ImagePicker from 'expo-image-picker';
 import { LinearGradient } from 'expo-linear-gradient';
 import { EvilIcons } from '@expo/vector-icons';
 import { DraggableGrid } from 'react-native-draggable-grid';
-import { dataContext } from '../redux/context/context';
+import { showToast } from '../redux/context/Toasts';
+import Toast from 'react-native-toast-message';
+import { useStateContext } from '../redux/context/context';
+import StepIndicatorComponent from './OnboardingScreens/StepsIndicator';
 interface MyTestProps {}
 interface MyTestState {
   data: { key: string; image: string }[];
 }
 const Add_Photos:React.FC<MyTestProps> = ({ navigation }:any) => {
   const [data, setData] = useState<MyTestState['data']>([]);
-  console.log("The images are:",data)
-  const {fullData,setFullData}=useContext(dataContext) as any
-  // setFullData((fullData: any)=>[...fullData,data])
-  
-  // console.log("The data is:",data) this data is send to next
+  const {dispatch } = useStateContext() ;
+  // console.log("The images path are:",data)
+  // const imagesData = state.values.find(item => item.images);
+  // if (imagesData) {
+  //   console.log("Images data:", imagesData.images);
+  // }
   const render_item = (item: { image: string; key: string }) => {
     return (
       <View style={styles.showImage} key={item.key}>
@@ -52,11 +56,22 @@ const Add_Photos:React.FC<MyTestProps> = ({ navigation }:any) => {
 
         if (newImages.length > 0) {
             setData([...data, ...newImages]);
-            setFullData((prevFullData: any) => [...prevFullData, ...newImages]);
+           
         }
     }
 };
+const handleClick=()=>{
+  if(data.length===0)
+  {
+    showToast("Warning","Please select images!")
+  }
+  else
+  {
+    dispatch({ type: 'ADD_VALUE', payload: { key: 'images', value: data } });
+      navigation.navigate('interests')
+  }
 
+}
 
   return (
     <SafeAreaView style={styles.container}>
@@ -71,21 +86,22 @@ const Add_Photos:React.FC<MyTestProps> = ({ navigation }:any) => {
       <TouchableOpacity style={{width:40,height:40,borderRadius:50,backgroundColor:'rgba(63, 80, 124, 0.16)',justifyContent:'center',alignItems:'center'}} onPress={()=>navigation.goBack()}>
       <AntDesign  name="arrowleft" size={20} color="#FFFFFF" style={styles.headerIcon} />
       </TouchableOpacity>
-      <TouchableOpacity style={styles.headerTextContainer} onPress={()=>navigation.navigate('location')}>
-      <Text style={styles.headerText}>skip</Text>
-  <View style={styles.line} />
-      
-      </TouchableOpacity>
+      <View style={styles.headerTextContainer} >
+      <Text style={styles.headerText}>Add Photos</Text>
+      </View>
     
       </View>
       </LinearGradient>
       <View style={{flex:1}}>
       <ScrollView style={styles.content}>
-      <Text style={styles.heading}>
-        Add photos
-       </Text>
-       <Text style={styles.paragraph}>Add at least 2 photos to continue</Text>
-      <View style={{ flex: 1, padding: 20 }}>
+      <StepIndicatorComponent currentStep={1}/>
+      <View style={styles.container1}>
+        <Text style={styles.text}>Your photos are your first impression. Select images that you feel represent your persona and energy – the ones you’d like to greet your future friends and collaborators with. What do these pictures say about you?</Text>
+   </View>
+      <View style={{ flex: 1, padding: 10 }}>
+        <Text style={{color:"#FFF",fontSize:12,marginBottom:10,marginLeft:5}}>
+        Upload your professional look photo with white background.
+        </Text>
       <View style={styles.uploadPhotos}>
         <TouchableOpacity onPress={selectImage}>
         <AntDesign name="upload" size={24} color="#D0D9F9" />
@@ -117,10 +133,14 @@ const Add_Photos:React.FC<MyTestProps> = ({ navigation }:any) => {
    </View>
     </View>
       </ScrollView>
-      <TouchableOpacity style={styles.selectButton} onPress={()=>navigation.navigate('location')}>
-       <Text style={{color:"#FFF"}}>CONTINUE</Text>
+      <View >
+        <View style={styles.bottomHeader}/>
+      <TouchableOpacity style={styles.selectButton} onPress={handleClick}>
+       <Text style={styles.buttonText}>Next</Text>
        </TouchableOpacity>
       </View>
+      </View>
+      <Toast/>
     </SafeAreaView>
   )
 }
@@ -136,7 +156,7 @@ const styles = StyleSheet.create({
       width:screenWidth,
       height:headerHeight,
       flexDirection:'row',
-      justifyContent:'space-between',
+      gap:100,
       alignItems:'center',
        },
        headerIcon:{
@@ -232,5 +252,35 @@ const styles = StyleSheet.create({
     width: 98, 
         height: 98, 
         borderRadius: 19,
+  },
+  container1:{
+    padding: 12,
+    borderWidth:5,
+      borderColor:'#191D2B',
+      borderRadius:10,
+      textAlign:'justify',
+      backgroundColor:'rgba(27, 30, 67, 0.20)',
+      elevation:6,
+      marginTop:'2%',
+      marginBottom:'10%',
   }
+  ,
+    text:{
+        color: '#D0D9F9', 
+        fontSize: 16,
+        fontStyle: 'normal', 
+        fontWeight: '400', 
+    },
+    buttonText:{
+      color: '#FFF',
+      fontSize: 18,
+      fontStyle: 'normal',
+      fontWeight: '700',
+     
+     },
+     bottomHeader: {
+      borderTopWidth: 1,
+      borderTopColor: '#2D335D',
+      marginBottom:10,
+    },
 })

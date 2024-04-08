@@ -6,6 +6,9 @@ import { getDatabase, ref, set } from "firebase/database";
 import app from '../config/firebaseConfig';
 import { LinearGradient } from 'expo-linear-gradient';
 import { AntDesign } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import Toast from 'react-native-toast-message';
+import { showToast } from '../redux/context/Toasts';
 const Signup = ({ navigation }:any) => {
     const auth = getAuth();
     const database=getDatabase(app)
@@ -14,10 +17,10 @@ const Signup = ({ navigation }:any) => {
     const [name,setName]=useState('');
     const [passowrdShowHide,setPassordShowHide]=useState<boolean>(true)
     const handleSignup =async () => {
-       
        await createUserWithEmailAndPassword(auth, email, password)
-        .then((userCredential) => {
+        .then(async(userCredential) => {
           const user = userCredential.user;
+          await AsyncStorage.setItem('uid', user.uid);
           setName('')
           setEmail('')
           setPassword('')
@@ -29,9 +32,10 @@ const Signup = ({ navigation }:any) => {
                 displayName: name, 
             }
             set(ref(database, `users/${user.uid}`), data)
-          .then(() => {
-         
-            navigation.navigate('Login')
+            
+          .then(() => { 
+            showToast("Success","User Account Created Successfully")
+            navigation.navigate('introduction')
           })
           .catch((error) => {
             console.error('Error storing user data:', error.message);
@@ -61,9 +65,9 @@ const visibilityStyle = {
                 end={{ x: 1, y: 0 }}
             >
                 <ImageBackground source={require('../assets/images/login.png')} style={styles.imageContianer}>
-                    <Image source={require('../assets/images/logo.png')} style={styles.logoImage} />
+                <Image source={require('../assets/today_logo.png')} style={styles.logoImage} />
                     <Text style={styles.welcomeText}>Welcome!</Text>
-                    <Text style={styles.LOGOText}>LOGO</Text>
+                 
                 </ImageBackground>
                 <View style={styles.authContianer}>
                 <Text style={styles.authText}>Name</Text>
@@ -128,6 +132,7 @@ const visibilityStyle = {
                     </View>
                 </View>
             </LinearGradient>
+            <Toast/>
         </ScrollView>
 </SafeAreaView>
     );
@@ -153,6 +158,8 @@ const styles = StyleSheet.create({
   },
   logoImage:{
     marginTop:90,
+    width: 120,
+   height: 120,
   },
   welcomeText: {
     color: '#FFF',

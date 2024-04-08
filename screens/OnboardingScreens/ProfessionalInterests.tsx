@@ -5,24 +5,25 @@ import { AntDesign } from '@expo/vector-icons';
 const screenWidth=Dimensions.get('window').width;
 const {height}=Dimensions.get('window')
 const headerHeight=height*0.1;
-import { useStateContext } from '../redux/context/context';
-import StepIndicatorComponent from './OnboardingScreens/StepsIndicator';
-import Toast from 'react-native-toast-message';
-const Interests = ({ navigation }:any) => {
+import StepIndicatorComponent from './StepsIndicator';
+import { useStateContext } from '../../redux/context/context';
+const ProfessionalInterests = ({ navigation }:any) => {
     const [selectedInterests, setSelectedInterests] = useState([]) as any;
-    const {dispatch } = useStateContext() ;
-    // console.log("The state is:",state)
+    const { dispatch } = useStateContext();
+    // console.log("The console is:",selectedInterests)
     const interests = [
-      "Innovation & Tech",
-      "Arts & Culture",
-      "Health & Wellness",
-      "Entrepreneurship & Start-ups",
-      "Education & Learning",
-      "Environment & Sustainability",
-      "Sports & Fitness",
-      "Travel & Adventure",
-      "Food & Culinary Arts",
-      "Volunteering & Social Impact",  
+      "Technology & Software Dev.",
+      "Business Development & Entrepreneurship",
+      "Creative Industries & Design",
+      "Marketing & Communications",
+      "Science & Research",
+      "Finance & Investment",
+      "Education & Training",
+      "Healthcare & Medical Fields",
+      "Non-Profit & Community Work",
+      "Engineering & Manufacturing",
+      
+      
     ];
     const handleInterestToggle = (interest:any) => {
         const index = selectedInterests.indexOf(interest);
@@ -34,11 +35,9 @@ const Interests = ({ navigation }:any) => {
           setSelectedInterests(updatedInterests);
         }
       };
-    const handleClick=()=>{
-
-        dispatch({ type: 'ADD_VALUE', payload: { key: 'interests', value: selectedInterests } });
-        navigation.navigate('pro_interests')
-          
+      const handleClick=()=>{
+        dispatch({ type: 'ADD_VALUE', payload: { key: 'professional_interests', value: selectedInterests } });
+        navigation.navigate('personalization')
     }
   return (
     <SafeAreaView style={styles.container}>
@@ -54,7 +53,7 @@ const Interests = ({ navigation }:any) => {
       <AntDesign  name="arrowleft" size={20} color="#FFFFFF" style={styles.headerIcon} />
       </TouchableOpacity>
       <View style={styles.headerTextContainer} >
-      <Text style={styles.headerText}>Interests</Text>
+      <Text style={styles.headerText}>Professional Interests </Text>
       </View>
     
       </View>
@@ -63,9 +62,9 @@ const Interests = ({ navigation }:any) => {
       <View style={{flex:1}}>
       <ScrollView style={styles.content}>
      
-      <StepIndicatorComponent currentStep={2}/>
+      <StepIndicatorComponent currentStep={3}/>
       <View style={styles.container1}>
-        <Text style={styles.text}>Your passions shape your world. Which of these do you pursue in your quest for growth and connection?</Text>
+        <Text style={styles.text}>Your professional pursuits are a mosaic of your ambition. Which fields are you looking to make your mark in or explore with others?</Text>
    </View>
        <View style={{ flex: 1, padding: 0 }}>
       <View style={{ flexDirection: 'row', flexWrap: 'wrap',justifyContent:'center',alignItems:'center'}}>
@@ -99,7 +98,7 @@ const Interests = ({ navigation }:any) => {
                     justifyContent: 'center',
                     alignItems: 'center',
                     alignSelf:'center',
-                    padding:16
+                    padding:1
                   }}>
                   <Text style={{ color: selectedInterests.includes(interest) ? '#D0D9F9' : '#D0D9F9',fontSize:12 }}>{interest}</Text>
                 </LinearGradient>
@@ -120,32 +119,31 @@ const Interests = ({ navigation }:any) => {
           </TouchableOpacity>
           </View>
       </View>
-      <Toast/>
     </SafeAreaView>
   )
 }
 
-export default Interests
+export default ProfessionalInterests
 
 const styles = StyleSheet.create({
    container:{
      flex:1,
      paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
    },
+   buttonText: {
+  color: '#FFF',
+  fontSize: 18,
+  fontStyle: 'normal',
+  fontWeight: '700',
+   
+  },
    header:{
     width:screenWidth,
     height:headerHeight,
     flexDirection:'row',
-    gap:100,
+    gap:50,
     alignItems:'center',
   
-   },
-   buttonText:{
-    color: '#FFF',
-    fontSize: 18,
-    fontStyle: 'normal',
-    fontWeight: '700',
-   
    },
    headerIcon:{
         padding:'5%',

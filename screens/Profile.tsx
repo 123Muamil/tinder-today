@@ -1,4 +1,5 @@
-import React from "react";
+import React,{useState} from "react";
+import { getAuth, signOut } from "firebase/auth";
 import {
   View,
   Image,
@@ -8,29 +9,33 @@ import {
   SafeAreaView,
   Dimensions,
   Platform,
-  StatusBar
+  StatusBar,
+  Modal
 } from "react-native";
 import { Icon} from "../components";
 import { EvilIcons } from '@expo/vector-icons';
 import DEMO from "../assets/data/demo";
 import styles, { WHITE } from "../assets/styles";
 import { LinearGradient } from 'expo-linear-gradient';
+import app from "../config/firebaseConfig";
 const { width } = Dimensions.get('window');
 const { height } = Dimensions.get('window');
 const halfScreenHeight = height * 0.5;
-const Profile = () => {
-  const {
-    age,
-    image,
-    info1,
-    info2,
-    info3,
-    info4,
-    location,
-    match,
-    name,
-  } = DEMO[7];
-
+const Profile = ({ navigation }:any) => {
+  
+  const [modalVisible, setModalVisible] = useState(false);
+  const auth = getAuth(app);
+  const toggleModal = () => {
+    setModalVisible(!modalVisible);
+  };
+const Logout=async()=>{
+  signOut(auth).then(() => {
+    setModalVisible(false)
+    navigation.navigate('Login')
+  }).catch((error) => {
+    console.log("error while logout")
+  });
+}
   return (
     <SafeAreaView style={{flex:1,backgroundColor: '#010510', paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0 }}>
            <StatusBar backgroundColor="#010510" barStyle="light-content" translucent={true} />
@@ -48,14 +53,58 @@ const Profile = () => {
               <Text style={styles.topIconLeft}>Profile</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.circle}>
+            <TouchableOpacity style={styles.circle} onPress={toggleModal}>
               <Icon
                 name="ellipsis-vertical"
                 size={20}
                 color={WHITE}
                 style={styles.topIconRight}
               />
+
             </TouchableOpacity>
+            {/* Modal  */}
+            <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={toggleModal}
+      >
+        <View
+          style={{
+            position: 'absolute',
+            top: 100,
+            right: 0,
+            width: 200,
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            justifyContent: 'center',
+            alignItems: 'center',
+          
+          }}
+        >
+          <View style={{ backgroundColor: 'white', padding: 20, borderRadius: 10 }}>
+            <TouchableOpacity onPress={Logout}>
+              <Text style={{ marginBottom: 10 }}>Logout</Text>
+            </TouchableOpacity>
+            {/* <TouchableOpacity onPress={() => console.log('New Broadcast')}>
+              <Text style={{ marginBottom: 10 }}>New Broadcast</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => console.log('Linked Devices')}>
+              <Text style={{ marginBottom: 10 }}>Linked Devices</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => console.log('Starred Messages')}>
+              <Text style={{ marginBottom: 10 }}>Starred Messages</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => console.log('Settings')}>
+              <Text>Settings</Text>
+            </TouchableOpacity> */}
+            {/* <TouchableOpacity onPress={toggleModal}>
+              <Text style={{ marginTop: 20 }}>Close</Text>
+            </TouchableOpacity> */}
+          </View>
+        </View>
+      </Modal>
+
+            {/* end of modal */}
           </View>
           <LinearGradient
         colors={['rgba(1, 5, 16, 0.00)', '#010510']}

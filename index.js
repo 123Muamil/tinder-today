@@ -15,11 +15,21 @@ import { setUser } from "./redux/reducer/user";
 import { useTheme } from 'react-native-paper';
 import { BlurView } from 'expo-blur';
 import Interests from "./screens/Interests";
+import ProfessionalInterests from "./screens/OnboardingScreens/ProfessionalInterests";
 import Add_Photos from "./screens/Add_Photos";
 import LocationSelector from "./screens/Location";
 import Keep_Posted from "./screens/Keep_Posted";
 import Privacy from "./screens/Privacy";
 import Test from './screens/Test'
+import Questions from "./screens/Questions";
+import Introduction from "./screens/OnboardingScreens/Introduction";
+import Personalization from "./screens/OnboardingScreens/Personalization";
+import PrimaryGoal from "./screens/OnboardingScreens/PrimaryGoal";
+import ValuesAndMindset from "./screens/OnboardingScreens/ValuesAndMindset";
+import ConnectionGoals from "./screens/OnboardingScreens/ConnectionGoals";
+import FinalThoughts from "./screens/OnboardingScreens/FinalThoughts";
+import PotentialMatches from "./screens/OnboardingScreens/PotentialMatches";
+import InviteCircle from "./screens/OnboardingScreens/InviteCircle";
 const MyTheme = {
   ...DefaultTheme,
   colors: {
@@ -119,16 +129,24 @@ const index = () => {
            </BlurView>
         )}
       </Stack.Screen>
-
-    
       <Stack.Screen name="ChatScreen" component={ChatScreen} options={{ headerShown: false}}  />
       <Stack.Screen name="Login" component={Login} options={{ headerShown: false,}}/>
       <Stack.Screen name="Signup" component={Signup} options={{ headerShown: false,}}/>
       <Stack.Screen name="interests" component={Interests} options={{ headerShown: false,}}/>
+      <Stack.Screen name="pro_interests" component={ProfessionalInterests} options={{ headerShown: false,}}/>
       <Stack.Screen name="add_photos" component={Add_Photos} options={{ headerShown: false,}}/>
       <Stack.Screen name="location" component={LocationSelector} options={{headerShown:false}}/>
       <Stack.Screen name="keep_posted" component={Keep_Posted} options={{headerShown:false}}/>
       <Stack.Screen name="privacy" component={Privacy} options={{headerShown:false}}/>
+      <Stack.Screen name="questions" component={Questions} options={{headerShown:false}}/>
+      <Stack.Screen name="introduction" component={Introduction} options={{headerShown:false}}/>
+      <Stack.Screen name="personalization" component={Personalization} options={{headerShown:false}}/>
+      <Stack.Screen name="primarygoal" component={PrimaryGoal} options={{headerShown:false}}/>
+      <Stack.Screen name="valuesandmindset" component={ValuesAndMindset} options={{headerShown:false}}/>
+      <Stack.Screen name="connectiongoals" component={ConnectionGoals} options={{headerShown:false}}/>
+      <Stack.Screen name="finalthoughts" component={FinalThoughts} options={{headerShown:false}}/>
+      <Stack.Screen name="potentialmatches" component={PotentialMatches} options={{headerShown:false}}/>
+      <Stack.Screen name="invitecircle" component={InviteCircle} options={{headerShown:false}}/>
       <Stack.Screen name="test" component={Test}/>
     </Stack.Navigator>
     </NavigationContainer>

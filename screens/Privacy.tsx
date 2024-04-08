@@ -44,7 +44,7 @@ const Privacy = ({navigation}:any) => {
        
      </View>
     <View style={{marginTop:'10%'}}>
-           <TouchableOpacity style={styles.button} onPress={()=>navigation.navigate('test')}>
+           <TouchableOpacity style={styles.button} onPress={()=>navigation.navigate('location')}>
              <Text style={styles.buttonText}>I ACCEPT</Text>
            </TouchableOpacity>
          <TouchableOpacity style={[styles.moreContainer,{marginTop:20,}]}>
