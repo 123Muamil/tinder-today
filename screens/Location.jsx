@@ -32,8 +32,6 @@ const LocationSelector = ({navigation}) => {
 
   
 const GetLocation=async()=>{
-
-
   let { status } = await Location.requestForegroundPermissionsAsync();
   if (status !== 'granted') {
     setErrorMsg('Permission to access location was denied');
@@ -205,9 +203,9 @@ const uploadImages = async (images) => {
   }
 };
 const generateUniqueImageName = () => {
-  const timestamp = new Date().getTime(); // Get current timestamp
-  const randomString = Math.random().toString(36).substring(2, 8); // Generate random string
-  const uniqueName = `image_${timestamp}_${randomString}`; // Combine timestamp and random string
+  const timestamp = new Date().getTime();
+  const randomString = Math.random().toString(36).substring(2, 8); 
+  const uniqueName = `image_${timestamp}_${randomString}`;
   return uniqueName;
 };
 

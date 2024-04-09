@@ -10,7 +10,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Toast from 'react-native-toast-message';
 import { showToast } from '../redux/context/Toasts';
 const Signup = ({ navigation }:any) => {
-    const auth = getAuth();
+    const auth = getAuth(app);
     const database=getDatabase(app)
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');

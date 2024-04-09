@@ -6,46 +6,68 @@ const { height } = Dimensions.get("window");
 import  EvilIcons  from 'react-native-vector-icons/EvilIcons';
 import  Entypo  from 'react-native-vector-icons/Entypo';
 import AntDesign from 'react-native-vector-icons/AntDesign';
-import { getDatabase, ref, onValue } from "firebase/database";
+import { getDatabase, ref,get } from "firebase/database";
 import { getAuth } from 'firebase/auth';
-const auth = getAuth();
-const currentUser=auth.currentUser;
-import MatchingAlgorithm from "../config/MatchingAlgorithm";
+import app from "../config/firebaseConfig";
+import {  compareAllUsers } from "../config/MatchingAlgorithm";
 const Home = () => {
+     const auth = getAuth(app);
+     const database = getDatabase(app);
     const swiperRef = useRef(null) as any;
      const [showLikeButton, setShowLikeButton] = useState(false);
      const [allUsers, setAllUsers] = useState([]);
-  // console.log("The all users are:", allUsers);
-  // const matchScores = MatchingAlgorithm(currentUser, allUsers);
-  // console.log("The matches score are:",matchScores)
-  useEffect(() => {
-    const database = getDatabase();
-    const usersRef = ref(database, 'users');
-
-    const fetchAllUsers = async () => {
-      try {
-        onValue(usersRef, (snapshot) => {
-          const usersData = snapshot.val();
-          if (usersData) {
-            const allUsersArray = Object.values(usersData);
-            // Filter out the current user
-            const filteredUsers = allUsersArray.filter((user:any) => user.uid !== currentUser.uid);
-            setAllUsers(filteredUsers);
+     const [currentUserData,setCurrentUserData]=useState({})
+     const currentUser=auth.currentUser;
+     useEffect(() => {
+      const matchScores = compareAllUsers(currentUserData, allUsers);
+      const updatedUsers = [...allUsers];
+  
+      matchScores.forEach(match => {
+          const userIndex = updatedUsers.findIndex(user => user.uid === match.to);
+          if (userIndex !== -1) {
+              updatedUsers[userIndex].score = match.score;
           }
-        });
-      } catch (error) {
-        console.error('Error fetching all users:', error);
-      }
-    };
+      });
+  
+      setAllUsers(updatedUsers);
+  }, []); 
+  useEffect(() => {
+    const usersRef = ref(database, 'users');
+const fetchUsersExceptCurrentUser = async () => {
+  try {
+      const snapshot = await get(usersRef);
+      const users = [];
+      snapshot.forEach(childSnapshot => {
+          const user = childSnapshot.val();
+          if (user.uid !== currentUser.uid) { 
+              users.push(user);
+          }
+      });
+      setAllUsers(users)
+  } catch (error) {
+      console.error("Error fetching users:", error);
+  }
+};
+const fetchCurrentUserData= async () => {
+  try {
+      const snapshot = await get(usersRef);
+      const users = [];
+      snapshot.forEach(childSnapshot => {
+          const user = childSnapshot.val();
+          if (user.uid === currentUser.uid) { 
+              users.push(user);
+          }
+      });
+      setCurrentUserData(users)
+     
+  } catch (error) {
+      console.error("Error fetching users:", error);
+  }
+};
+fetchUsersExceptCurrentUser();
+fetchCurrentUserData();
 
-    fetchAllUsers();
-
-    // Clean up the event listener when the component unmounts
-    return () => {
-      // Detach the onValue event listener
-      onValue(usersRef, null);
-    };
-  }, []); // Removed currentUser from dependency array
+  }, []); 
   const renderCard = (item:any) => {
     return (
       <View style={styles.card}>
@@ -129,22 +151,6 @@ const Home = () => {
         stackSeparation={15}
         cardVerticalMargin={height * 0.05}
         overlayLabels={{
-          // bottom: {
-          //   title: "NOPE",
-          //   style: {
-          //     label: {
-          //       backgroundColor: "red",
-          //       borderColor: "red",
-          //       color: "white",
-          //       borderWidth: 1
-          //     },
-          //     wrapper: {
-          //       flexDirection: "column",
-          //       alignItems: "center",
-          //       justifyContent: "center"
-          //     }
-          //   }
-          // },
           right: {
             title: "Like",
             style: {
