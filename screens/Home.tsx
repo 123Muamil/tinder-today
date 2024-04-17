@@ -91,8 +91,11 @@ fetchCurrentUserData();
                     <View style={styles.matchContainer}>
                       <Text style={styles.NameStyle}>{item.displayName}</Text>
                       <View style={styles.MATCHContainer}>
-                        <Text style={styles.matchText}>{item.score} Match</Text>
-                      </View>
+  <Text style={styles.matchText}>
+    {item.score ? item.score : "100%"}
+  </Text>
+</View>
+
                     </View>
                     <View style={{ flexDirection: 'row', marginLeft: 20 }}>
                       <EvilIcons name="location" size={24} color="#FFFFFF" style={{ marginRight: 5, marginTop: 4, }} />
