@@ -1,5 +1,5 @@
 import React,{useRef,useState,useEffect} from "react";
-import { View, Text, Image, TouchableOpacity, SafeAreaView, StyleSheet, StatusBar, Platform, Dimensions } from "react-native";
+import { View, Text, Image, TouchableOpacity, SafeAreaView,ActivityIndicator, StyleSheet, StatusBar, Platform, Dimensions } from "react-native";
 import Swiper from "react-native-deck-swiper";
 import DEMO from "../assets/data/demo";
 const { height } = Dimensions.get("window");
@@ -18,19 +18,24 @@ const Home = () => {
      const [allUsers, setAllUsers] = useState([]);
      const [currentUserData,setCurrentUserData]=useState({})
      const currentUser=auth.currentUser;
+    // allUsers.map((item)=>console.log("The image url is:",item.imageUrls[0]))
      useEffect(() => {
       const matchScores = compareAllUsers(currentUserData, allUsers);
+      // console.log("The match score is:",matchScores)
       const updatedUsers = [...allUsers];
-  
+      let updated = false; 
       matchScores.forEach(match => {
           const userIndex = updatedUsers.findIndex(user => user.uid === match.to);
           if (userIndex !== -1) {
               updatedUsers[userIndex].score = match.score;
           }
       });
-  
+    //  console.log("The updated users are:",updatedUsers)
+     if (updated) {
       setAllUsers(updatedUsers);
-  }, []); 
+    }
+      
+  }, [currentUserData, allUsers]); 
   useEffect(() => {
     const usersRef = ref(database, 'users');
 const fetchUsersExceptCurrentUser = async () => {
@@ -69,35 +74,40 @@ fetchCurrentUserData();
 
   }, []); 
   const renderCard = (item:any) => {
+ 
+    if (!item) {
+      return (
+        <View style={styles.loaderContainer}>
+          <ActivityIndicator size="large" color="#FFFFFF" />
+        </View>
+      );
+    }
+  
+    console.log("The card items is:", item);
     return (
       <View style={styles.card}>
-        <Image source={item.image} style={styles.cardImage} />
+        <Image source={{ uri: item.imageUrls[0] }} style={styles.cardImage} />
         <View style={styles.explorerInnerContainer}>
                     <View style={styles.matchContainer}>
-                      <Text style={styles.NameStyle}>Brandy Kautzer </Text>
+                      <Text style={styles.NameStyle}>{item.displayName}</Text>
                       <View style={styles.MATCHContainer}>
-                        <Text style={styles.matchText}>80% Match</Text>
+                        <Text style={styles.matchText}>{item.score} Match</Text>
                       </View>
                     </View>
                     <View style={{ flexDirection: 'row', marginLeft: 20 }}>
                       <EvilIcons name="location" size={24} color="#FFFFFF" style={{ marginRight: 5, marginTop: 4, }} />
-                      <Text style={styles.text}>New York</Text>
+                      <Text style={styles.text}>{item.location.city}</Text>
                     </View>
                     <View style={styles.line}></View>
                     <View style={styles.Container}>
-                      <View style={styles.Row}>
-                        <Image source={require('../assets/traveler.png')} style={styles.iconImage} />
-                        <Text style={styles.icon}>Traveler</Text>
-                      </View>
-                      <View style={styles.Row}>
-                        <Image source={require('../assets/singer.png')} style={styles.iconImage} />
-                        <Text style={styles.icon}>Singer</Text>
-                      </View>
-                      <View style={styles.Row}>
-                        <Image source={require('../assets/painter.png')} style={styles.iconImage} />
-                        <Text style={styles.icon}>Painter</Text>
-                      </View>
-                    </View>
+            {item.professional_interests.map((interest: string, index: number) => (
+              <View key={index} style={styles.Row}>
+               
+                <Image source={require('../assets/traveler.png')} style={styles.iconImage} />
+                <Text style={styles.icon}>{interest}</Text>
+              </View>
+            ))}
+          </View>
                   </View>
                   <TouchableOpacity style={styles.crossContainer} onPress={handleCrossButtonClick}>
                     <Entypo name="cross" size={20} color="#FFFFFF" />
@@ -143,7 +153,7 @@ fetchCurrentUserData();
 
       <Swiper
         ref={swiperRef}
-        cards={DEMO}
+        cards={allUsers}
         renderCard={renderCard}
         backgroundColor="transparent"
         stackSize={3}
@@ -341,5 +351,11 @@ const styles = StyleSheet.create({
     height:16,
     marginTop:2,
     marginRight:5,
+  },
+  loaderContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#010510',
   },
 });

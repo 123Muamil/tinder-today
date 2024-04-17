@@ -26,7 +26,7 @@ const Login = ({ navigation }:any) => {
     const [userData, setUserData] = useState(null);
     const [userId, setUserId] = useState(null);
     const [passowrdShowHide,setPassordShowHide]=useState<boolean>(true)
-     console.log("The user data is:",userData)
+    //  console.log("The user data is:",userData)
     useEffect(() => {
       const fetchData = async () => {
         try {

@@ -96,6 +96,7 @@
   
 //   const styles = StyleSheet.create({})
  const createUserProfile = (user) => {
+    // console.log("The user is:",user)
     return {
         id: user.uid,
         values: [user.values_and_mindset], 
@@ -124,7 +125,7 @@
 
  const calculateMatchScore = (currentUser, userData) => {
     // console.log("The user data is:",userData.goalRange)
-    // console.log("The current user is:",currentUser[0].primary_goal)
+    // console.log("The current user is:",currentUser[0]?.values_and_mindset)
     // const result=mapPrimaryGoalToRange()
     let score = 0;
     const weights = {
@@ -136,15 +137,15 @@
         goalAlignment: 25,
     };
 
-    const sharedValuesScore = userData.values.includes(currentUser[0].values_and_mindset) ? weights.sharedValues : 0;
+    const sharedValuesScore = userData.values.includes(currentUser[0]?.values_and_mindset) ? weights.sharedValues : 0;
     // console.log("The shared values are:",sharedValuesScore)
-    const sharedInterestsScore = currentUser[0].interests.filter(interest => userData.interests.includes(interest)).length * weights.sharedInterests;
+    const sharedInterestsScore = currentUser[0]?.interests.filter(interest => userData.interests.includes(interest)).length * weights.sharedInterests;
     // console.log("The sharedinterests are :",sharedInterestsScore)
-    const currentUserInterests = currentUser[0].professional_interests.join(', ');
+    const currentUserInterests = currentUser[0]?.professional_interests.join(', ');
     const userDataInterests = userData.professionalBackground;
     const professionalBackgroundScore = (currentUserInterests === userDataInterests) ? weights.professionalBackground : 0;
     // console.log("The professional backgroundScore is:",professionalBackgroundScore)
-    const  personalityTraits=currentUser[0].personalization
+    const  personalityTraits=currentUser[0]?.personalization
     // console.log("The personalization is:",personalityTraits)
     // console.log("The per:",userData.personalityTraits[0])
     const personalityTraitsScore =(personalityTraits === userData.personalityTraits[0]) ? weights.personalityTraits : 0;
@@ -153,13 +154,13 @@
     score += sharedValuesScore + sharedInterestsScore + professionalBackgroundScore + personalityTraitsScore;
     // console.log("The score is:",score)
     // // Adjusting proximity logic as an example
-    const distance = Math.hypot(currentUser[0].location.latitude - userData.location.latitude, currentUser[0].location.longitude - userData.location.longitude);
+    const distance = Math.hypot(currentUser[0]?.location.latitude - userData.location.latitude, currentUser[0]?.location.longitude - userData.location.longitude);
     // console.log("The distance is:",distance)
     const proximityScore = distance <= 50 ? weights.proximity : 0;
     score += proximityScore;
     // console.log("The score is:",score)
     // // Goal alignment logic remains the same
-    const currentUserGoalRange = mapPrimaryGoalToRange(currentUser[0].primary_goal);
+    const currentUserGoalRange = mapPrimaryGoalToRange(currentUser[0]?.primary_goal);
     const goalAlignmentScore = (Math.abs(currentUserGoalRange - userData.goalRange) <= 1) ? weights.goalAlignment : 0;
     // console.log("The goal is:",goalAlignmentScore)
     score += goalAlignmentScore;
@@ -183,7 +184,7 @@ export const compareAllUsers = (currentUser, userData) => {
         // console.log("The other users data is:",item.id)
         // // console.log("The score is:",score)
         matchScores.push({
-            from: currentUser[0].uid,
+            from: currentUser[0]?.uid,
             to: item.id,
             score: `${score.toFixed(2)}%`,
         });
