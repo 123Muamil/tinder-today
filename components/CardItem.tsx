@@ -20,6 +20,7 @@ const CardItem = ({
   name,
   index,
 }: CardItemT) => {
+  console.log('The image is:',name)
   // Custom styling
   const fullWidth = Dimensions.get("window").width;
   let size = index % 4 === 0 || index % 4 === 3 ? 250 : 290;
@@ -44,7 +45,7 @@ const CardItem = ({
   return (
     <SafeAreaView style={[styles.containerCardItem,{height:size}]}>
       {/* IMAGE */}
-      <Image source={image} style={[imageStyle,{height:size}]} />
+      <Image source={{uri:image}} style={[imageStyle,{height:size}]} />
        <View style={styles.matchesContainer}>
        <Text style={nameStyle}>{name}</Text> 
        <View style={styles.status}>

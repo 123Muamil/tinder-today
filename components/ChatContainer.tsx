@@ -1,20 +1,17 @@
 import React from "react";
-import { FlatList, View, StyleSheet, Text, Image, Dimensions } from "react-native";
+import { FlatList, View, StyleSheet, Text, Image } from "react-native";
 import { useSelector } from "react-redux";
 import { Video, ResizeMode } from 'expo-av';
 import AudioSlider from "../audio/AudioSlider";
-const screenWidth=Dimensions.get('window');
 const ChatContainer = ({ messages }: any) => {
   const { userData } = useSelector((state: any) => state.User);
   const currentUserId = userData.uid;
   const video = React.useRef(null) as any;
   const [status, setStatus] = React.useState({}) as any;
-
   const renderItem = ({ item }: any) => {
     const isCurrentUser = item.message.sender === currentUserId;
     const messageAlignment = isCurrentUser ? 'flex-end' : 'flex-start';
     const backgroundColor = isCurrentUser ? '#1B1E43' : '#1B1E43';
-    
     return (
       <View style={[styles.messageContainer, { alignSelf: messageAlignment }]}>
         <View style={[styles.messageBubble, { backgroundColor }]}>

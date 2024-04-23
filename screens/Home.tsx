@@ -75,35 +75,35 @@ fetchCurrentUserData();
   }, []); 
   const renderCard = (item:any) => {
  
-    if (!item) {
-      return (
-        <View style={styles.loaderContainer}>
-          <ActivityIndicator size="large" color="#FFFFFF" />
-        </View>
-      );
-    }
+    // if (!item) {
+    //   return (
+    //     <View style={styles.loaderContainer}>
+    //       <ActivityIndicator size="large" color="#FFFFFF" />
+    //     </View>
+    //   );
+    // }
   
-    console.log("The card items is:", item);
+    // console.log("The card items is:", item);
     return (
       <View style={styles.card}>
-        <Image source={{ uri: item.imageUrls[0] }} style={styles.cardImage} />
+        <Image source={{ uri: item?.imageUrls?.[0] }} style={styles.cardImage} />
         <View style={styles.explorerInnerContainer}>
                     <View style={styles.matchContainer}>
-                      <Text style={styles.NameStyle}>{item.displayName}</Text>
+                      <Text style={styles.NameStyle}>{item?.displayName}</Text>
                       <View style={styles.MATCHContainer}>
   <Text style={styles.matchText}>
-    {item.score ? item.score : "100%"}
+    {item?.score ? item?.score : "100%"}
   </Text>
 </View>
 
                     </View>
                     <View style={{ flexDirection: 'row', marginLeft: 20 }}>
                       <EvilIcons name="location" size={24} color="#FFFFFF" style={{ marginRight: 5, marginTop: 4, }} />
-                      <Text style={styles.text}>{item.location.city}</Text>
+                      <Text style={styles.text}>Lahore</Text>
                     </View>
                     <View style={styles.line}></View>
                     <View style={styles.Container}>
-            {item.professional_interests.map((interest: string, index: number) => (
+            {item?.professional_interests?.map((interest: string, index: number) => (
               <View key={index} style={styles.Row}>
                
                 <Image source={require('../assets/traveler.png')} style={styles.iconImage} />

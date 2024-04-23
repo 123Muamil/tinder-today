@@ -136,10 +136,10 @@ const ChatScreen = ({ route, navigation }: ChatScreenProps) =>  {
       quality: 0.2,
     });
 
-    console.log("The image result is:",result);
+    // console.log("The image result is:",result);
 
     if (!result.canceled) {
-      console.log("The result is:",result.assets[0].type)
+      // console.log("The result is:",result.assets[0].type)
       if(result.assets[0].type==='image')
       {
         const imageUri = result.assets[0].uri;

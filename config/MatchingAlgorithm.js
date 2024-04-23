@@ -96,15 +96,15 @@
   
 //   const styles = StyleSheet.create({})
  const createUserProfile = (user) => {
-    // console.log("The user is:",user)
+    // console.log("The user is:", user.professional_interests.join(','))
     return {
-        id: user.uid,
-        values: [user.values_and_mindset], 
-        interests: user.interests,
-        professionalBackground: user.professional_interests.join(', '),
+        id: user?.uid,
+        values: [user?.values_and_mindset], 
+        interests: user?.interests,
+        professionalBackground: user?.professional_interests?.join(','),
         personalityTraits: [user.personalization], 
-        location: user.location,
-        goalRange: mapPrimaryGoalToRange(user.primary_goal)
+        location: user?.location,
+        goalRange: mapPrimaryGoalToRange(user?.primary_goal)
     };
 };
 
@@ -139,10 +139,10 @@
 
     const sharedValuesScore = userData.values.includes(currentUser[0]?.values_and_mindset) ? weights.sharedValues : 0;
     // console.log("The shared values are:",sharedValuesScore)
-    const sharedInterestsScore = currentUser[0]?.interests.filter(interest => userData.interests.includes(interest)).length * weights.sharedInterests;
+    const sharedInterestsScore = currentUser[0]?.interests?.filter(interest => userData?.interests?.includes(interest)).length * weights.sharedInterests;
     // console.log("The sharedinterests are :",sharedInterestsScore)
-    const currentUserInterests = currentUser[0]?.professional_interests.join(', ');
-    const userDataInterests = userData.professionalBackground;
+    const currentUserInterests = currentUser[0]?.professional_interests?.join(', ');
+    const userDataInterests = userData?.professionalBackground;
     const professionalBackgroundScore = (currentUserInterests === userDataInterests) ? weights.professionalBackground : 0;
     // console.log("The professional backgroundScore is:",professionalBackgroundScore)
     const  personalityTraits=currentUser[0]?.personalization
@@ -154,14 +154,14 @@
     score += sharedValuesScore + sharedInterestsScore + professionalBackgroundScore + personalityTraitsScore;
     // console.log("The score is:",score)
     // // Adjusting proximity logic as an example
-    const distance = Math.hypot(currentUser[0]?.location.latitude - userData.location.latitude, currentUser[0]?.location.longitude - userData.location.longitude);
+    const distance = Math.hypot(currentUser[0]?.location?.latitude - userData?.location?.latitude, currentUser[0]?.location?.longitude - userData?.location?.longitude);
     // console.log("The distance is:",distance)
     const proximityScore = distance <= 50 ? weights.proximity : 0;
     score += proximityScore;
     // console.log("The score is:",score)
     // // Goal alignment logic remains the same
     const currentUserGoalRange = mapPrimaryGoalToRange(currentUser[0]?.primary_goal);
-    const goalAlignmentScore = (Math.abs(currentUserGoalRange - userData.goalRange) <= 1) ? weights.goalAlignment : 0;
+    const goalAlignmentScore = (Math.abs(currentUserGoalRange - userData?.goalRange) <= 1) ? weights.goalAlignment : 0;
     // console.log("The goal is:",goalAlignmentScore)
     score += goalAlignmentScore;
     // console.log("The score is:",score)
