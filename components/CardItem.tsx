@@ -20,7 +20,7 @@ const CardItem = ({
   name,
   index,
 }: CardItemT) => {
-  console.log('The image is:',name)
+  // console.log('The image is:',name)
   // Custom styling
   const fullWidth = Dimensions.get("window").width;
   let size = index % 4 === 0 || index % 4 === 3 ? 250 : 290;

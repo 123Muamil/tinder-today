@@ -1,89 +1,117 @@
 import React,{useRef,useState,useEffect} from "react";
-import { View, Text, Image, TouchableOpacity, SafeAreaView,ActivityIndicator, StyleSheet, StatusBar, Platform, Dimensions } from "react-native";
+import { View, Text, Image, TouchableOpacity, SafeAreaView, StyleSheet, StatusBar, Platform, Dimensions } from "react-native";
 import Swiper from "react-native-deck-swiper";
-import DEMO from "../assets/data/demo";
 const { height } = Dimensions.get("window");
 import  EvilIcons  from 'react-native-vector-icons/EvilIcons';
 import  Entypo  from 'react-native-vector-icons/Entypo';
 import AntDesign from 'react-native-vector-icons/AntDesign';
-import { getDatabase, ref,get } from "firebase/database";
+import { getDatabase, ref,get,set, update } from "firebase/database";
 import { getAuth } from 'firebase/auth';
 import app from "../config/firebaseConfig";
 import {  compareAllUsers } from "../config/MatchingAlgorithm";
 const Home = () => {
-     const auth = getAuth(app);
-     const database = getDatabase(app);
+  const auth = getAuth(app);
+  const database = getDatabase(app);
+  const [udatedAllUsers,setUpdatedAllUsers]=useState([])
+  const [currentUserData,setCurrentUserData]=useState({})
+  const currentUser=auth?.currentUser;
     const swiperRef = useRef(null) as any;
      const [showLikeButton, setShowLikeButton] = useState(false);
      const [allUsers, setAllUsers] = useState([]);
-     const [currentUserData,setCurrentUserData]=useState({})
-     const currentUser=auth.currentUser;
-    // allUsers.map((item)=>console.log("The image url is:",item.imageUrls[0]))
      useEffect(() => {
+      const usersRef = ref(database, 'users');
+  const fetchUsersExceptCurrentUser = async () => {
+    try {
+        const snapshot = await get(usersRef);
+        const users = [];
+        snapshot.forEach(childSnapshot => {
+            const user = childSnapshot.val();
+            if (user?.uid !== currentUser?.uid) { 
+                users.push(user);
+            }
+        });
+        setAllUsers(users)
+    } catch (error) {
+        console.error("Error fetching users:", error);
+    }
+  };
+  const fetchCurrentUserData= async () => {
+    try {
+        const snapshot = await get(usersRef);
+        const users = [];
+        snapshot.forEach(childSnapshot => {
+            const user = childSnapshot.val();
+            if (user?.uid === currentUser?.uid) { 
+                users.push(user);
+            }
+        });
+        setCurrentUserData(users)
+       
+    } catch (error) {
+        console.error("Error fetching users:", error);
+    }
+  };
+  fetchUsersExceptCurrentUser();
+  fetchCurrentUserData();
+  
+    }, []); 
+    useEffect(() => {
       const matchScores = compareAllUsers(currentUserData, allUsers);
-      // console.log("The match score is:",matchScores)
       const updatedUsers = [...allUsers];
-      let updated = false; 
       matchScores.forEach(match => {
           const userIndex = updatedUsers.findIndex(user => user.uid === match.to);
           if (userIndex !== -1) {
               updatedUsers[userIndex].score = match.score;
           }
       });
-    //  console.log("The updated users are:",updatedUsers)
-     if (updated) {
-      setAllUsers(updatedUsers);
-    }
-      
-  }, [currentUserData, allUsers]); 
-  useEffect(() => {
-    const usersRef = ref(database, 'users');
-const fetchUsersExceptCurrentUser = async () => {
-  try {
-      const snapshot = await get(usersRef);
-      const users = [];
-      snapshot.forEach(childSnapshot => {
-          const user = childSnapshot.val();
-          if (user.uid !== currentUser.uid) { 
-              users.push(user);
-          }
-      });
-      setAllUsers(users)
-  } catch (error) {
-      console.error("Error fetching users:", error);
+      setUpdatedAllUsers(updatedUsers)  
+  }, [currentUser,allUsers]); 
+  const storeOrUpdateData = async (userId:any, data:any) => {
+    const usersRef = ref(database, `matchingScore/${userId}`);
+   try {
+     const snapshot = await get(usersRef);
+     const exists = snapshot.exists();
+     if (exists) {
+       const updatedData = { ...data };
+       await update(usersRef, updatedData);
+      //  console.log('Data updated successfully');
+     } else {
+       const newData = { ...data };
+       await set(usersRef, newData);
+      //  console.log('Data stored successfully');
+     }
+   } catch (error) {
+     console.error('Error storing or updating data:', error);
+   }
+ };
+ 
+ if(udatedAllUsers.length!==0)
+  {
+   const currentUser = auth?.currentUser;
+   const userId=currentUser?.uid;
+   storeOrUpdateData(userId,udatedAllUsers)
   }
-};
-const fetchCurrentUserData= async () => {
-  try {
-      const snapshot = await get(usersRef);
-      const users = [];
-      snapshot.forEach(childSnapshot => {
-          const user = childSnapshot.val();
-          if (user.uid === currentUser.uid) { 
-              users.push(user);
-          }
-      });
-      setCurrentUserData(users)
-     
-  } catch (error) {
-      console.error("Error fetching users:", error);
-  }
-};
-fetchUsersExceptCurrentUser();
-fetchCurrentUserData();
-
-  }, []); 
+    useEffect(() => {
+      const usersRef = ref(database, 'matchingScore');
+      const fetchUserData = async () => {
+        try {
+          const snapshot = await get(usersRef);
+          const userDataFromDB = [];
+          snapshot.forEach((childSnapshot) => {
+            const user = childSnapshot.val();
+            userDataFromDB.push(user);
+          });
+          setAllUsers(userDataFromDB);
+        } catch (error) {
+          console.error("Error fetching user data:", error);
+        }
+      };
+      fetchUserData();
+    }, []); 
+ 
   const renderCard = (item:any) => {
  
-    // if (!item) {
-    //   return (
-    //     <View style={styles.loaderContainer}>
-    //       <ActivityIndicator size="large" color="#FFFFFF" />
-    //     </View>
-    //   );
-    // }
-  
-    // console.log("The card items is:", item);
+ 
     return (
       <View style={styles.card}>
         <Image source={{ uri: item?.imageUrls?.[0] }} style={styles.cardImage} />
@@ -92,7 +120,7 @@ fetchCurrentUserData();
                       <Text style={styles.NameStyle}>{item?.displayName}</Text>
                       <View style={styles.MATCHContainer}>
   <Text style={styles.matchText}>
-    {item?.score ? item?.score : "100%"}
+    {item?.score }
   </Text>
 </View>
 

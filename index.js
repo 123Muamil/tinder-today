@@ -1,4 +1,4 @@
-import React,{useEffect} from "react";
+import React,{useEffect,useState} from "react";
 import { NavigationContainer,DefaultTheme} from '@react-navigation/native';
 import { Home, Matches, Messages, Profile } from "./screens";
 import TabBarIcon from "./components/TabBarIcon";
@@ -38,12 +38,12 @@ const MyTheme = {
   },
 };
 const index = () => {
+  
     const theme = useTheme();
   theme.colors.secondaryContainer = "transperent"
-    // console.log("The current-route is:",route?.name)
       const dispatch=useDispatch()
       const { userData, login } = useSelector((state) => state.User);
-      console.warn("The user is:",login)
+      // console.warn("The user is:",login)
       console.log(login)
       useEffect(() => {
         getUser();
@@ -55,13 +55,14 @@ const index = () => {
               dispatch(setUser(data))
           }
       }
+   
+  
   return (
     <NavigationContainer theme={MyTheme}>
     <Stack.Navigator  initialRouteName={!login?"Login":'Tab'} >
       <Stack.Screen
         name="Tab"
         options={{ headerShown: false,}}
-      
       >
         {() => (
            <BlurView intensity={100} tint="light" blurReductionFactor={32} style={{flex:1}}>

@@ -44,6 +44,7 @@ export type TabBarIconT = {
 
 
 export type DataT = {
+  imageUrls: any;
   displayName: string;
   id: number;
   name: string;

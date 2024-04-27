@@ -2,18 +2,16 @@ import React,{useEffect, useState} from "react";
 import { Text, TouchableOpacity, View, FlatList,SafeAreaView,Platform,StatusBar } from "react-native";
 import { useNavigation } from "@react-navigation/native"; 
 import { Icon, Message } from "../components";
-import styles, { DARK_GRAY } from "../assets/styles";
+import styles from "../assets/styles";
 import { getDatabase, ref, child, get} from "firebase/database";
 import { DataT } from "../types";
 import app from "../config/firebaseConfig";
 import { useSelector } from "react-redux";
-
 const Messages:React.FC = () => {
   const navigation = useNavigation<any>();
   const [users, setUsers] = useState<DataT[] | undefined>(undefined);
   const { userData} = useSelector((state:any) => state.User);
   // console.log("The Current user data is:",userData)
-
 useEffect(() => {
  getAllUsers()
 }, [])
@@ -57,14 +55,12 @@ const getAllUsers = async () => {
             onPress={() => {
               navigation.navigate("ChatScreen", { match: item }); 
             }}
-           
             >
               <Message
-                image={item.image}
+                image={item.imageUrls?.[0]}
                 name={item.displayName}
                 lastMessage={item.message}
               />
-              
             </TouchableOpacity>
           )}
           ListEmptyComponent={()=>(

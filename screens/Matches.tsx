@@ -11,13 +11,12 @@ import {
   Platform
 } from "react-native";
 import { CardItem, Icon } from "../components";
-import DEMO from "../assets/data/demo";
 import styles from "../assets/styles";
 import app from "../config/firebaseConfig";
 
-const Matches = () => {
+const Matches = ({navigation}:any) => {
   const [allUsers, setAllUsers] = useState([]);
-  // console.log('The users are:',allUsers)
+  console.log('The users are:',allUsers)
   const auth = getAuth(app);
   const database = getDatabase(app);
   const currentUser=auth.currentUser;
@@ -50,14 +49,15 @@ fetchUsersExceptCurrentUser();
           <Icon name="ellipsis-vertical" color={'#FFFFFF'} size={20} />
         </TouchableOpacity>
       </View>
-
       <FlatList
         numColumns={2}
         data={allUsers}
         keyExtractor={(item, index) => index.toString()}
         renderItem={({ item,index }) => (
-        
-          <TouchableOpacity >
+          <TouchableOpacity    onPress={() => {
+            navigation.navigate("ChatScreen", { match: item }); 
+          }}
+          >
             <CardItem
               image={item.imageUrls?.[0]}
               name={item.displayName}

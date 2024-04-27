@@ -50,6 +50,7 @@ const ChatContainer = ({ messages }: any) => {
       keyExtractor={(item, index) => index.toString()}
       renderItem={renderItem}
       contentContainerStyle={styles.container}
+      
     />
   );
 };

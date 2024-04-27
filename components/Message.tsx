@@ -1,20 +1,26 @@
-import React from "react";
+import React,{useState} from "react";
 import { Text, View, Image, StyleSheet } from "react-native";
 import { MessageT } from "../types";
 import styles from "../assets/styles";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const Message: React.FC<MessageT> = ({ image, lastMessage, name }) => (
-  <View style={Styles.messageContainer}>
-    <Image source={require('../assets/images/02.jpg')} style={styles.avatar} />
-    <View style={Styles.contentContainer}>
-      <View style={Styles.lastMessageContainer}>
-        <Text style={Styles.name}>{name}</Text>
-        <Text style={Styles.message}>{lastMessage}Hello Every One</Text>
+const Message: React.FC<MessageT> = ({ image, lastMessage, name }) => {
+  const [time, setTime] = useState("10:30 AM");
+  const message =  AsyncStorage.getItem('lastMessage');
+  console.log("The last message is:",message)
+  return (
+    <View style={Styles.messageContainer}>
+      <Image source={{uri:image}} style={styles.avatar} />
+      <View style={Styles.contentContainer}>
+        <View style={Styles.lastMessageContainer}>
+          <Text style={Styles.name}>{name}</Text>
+          <Text style={Styles.message}>{lastMessage}Hello Every One</Text>
+        </View>
       </View>
+      <Text style={Styles.time}>{time}</Text>
     </View>
-    <Text style={Styles.time}>10:30 AM</Text>
-  </View>
-);
+  );
+};
 
 const Styles = StyleSheet.create({
   messageContainer: {

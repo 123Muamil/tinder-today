@@ -109,7 +109,7 @@ const visibilityStyle = {
                     </View>
                   
                     <TouchableOpacity style={styles.loginButton} onPress={handleSignup}>
-                        <Text style={styles.buttonText}>Sing Up</Text>
+                        <Text style={styles.buttonText}>Sign Up</Text>
                     </TouchableOpacity>
                     <View style={styles.dividerContainer}>
                         <View style={styles.line}></View>

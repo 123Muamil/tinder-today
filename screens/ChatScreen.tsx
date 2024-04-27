@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { View, Text, TouchableOpacity, TextInput, StyleSheet, KeyboardAvoidingView, Platform,PanResponder, Animated,Dimensions,Image,StatusBar} from "react-native";
+import { View, Text, TouchableOpacity,ScrollView, TextInput, StyleSheet, KeyboardAvoidingView, Platform,PanResponder, Animated,Dimensions,Image,StatusBar} from "react-native";
 import { Icon } from "../components";
 import styles from "../assets/styles";
 import ChatContainer from "../components/ChatContainer";
@@ -17,6 +17,7 @@ import { getStorage, ref as ref1,uploadBytes,getDownloadURL } from "firebase/sto
 import { Audio } from 'expo-av';
 import { CommonActions } from '@react-navigation/native';
 import { NavigationProp } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 const {height}=Dimensions.get('window')
 const chatHeight=height*0.15;
 const windowWidth = Dimensions.get('window').width;
@@ -28,6 +29,7 @@ type RootStackParamList = {
       displayName: any;
       name: string;
       messages: string[];
+      imageUrls:string[];
     };
   };
 };
@@ -47,6 +49,7 @@ const ChatScreen = ({ route, navigation }: ChatScreenProps) =>  {
   const [permissionResponse, requestPermission] = Audio.usePermissions() as any;
   const pan = useRef(new Animated.ValueXY()).current;
   const match = route.params?.match;
+  // console.log("The match is:",match.imageUrls?.[0])
   const database = getDatabase(app);
   const storage= getStorage(app)
   const currentUserId = userData.uid;
@@ -59,7 +62,17 @@ const ChatScreen = ({ route, navigation }: ChatScreenProps) =>  {
         ...message,
       }));
       setAllMessages(messages);
-      console.log("The messages are:",messages)
+      const lastMessage = messages[messages.length - 1].message;
+      console.log("The last message is:",lastMessage)
+      try {
+        const prevMessage = AsyncStorage.getItem('lastMessage');
+        if (prevMessage) {
+         AsyncStorage.removeItem('lastMessage');
+        }
+        AsyncStorage.setItem('lastMessage', JSON.stringify(lastMessage));
+      } catch (error) {
+        console.error('Error updating last message:', error);
+      }
     });
 
     return () => {
@@ -241,13 +254,13 @@ const ChatScreen = ({ route, navigation }: ChatScreenProps) =>  {
     async function stopRecording() {
       console.log('Stopping recording..');
       setRecording(undefined);
-      await recording.stopAndUnloadAsync();
+      await recording?.stopAndUnloadAsync();
       await Audio.setAudioModeAsync(
         {
           allowsRecordingIOS: false,
         }
       );
-  const audioUri = recording.getURI();
+  const audioUri = recording?.getURI();
   const response = await fetch(audioUri);
   const blob = await response.blob();
   try {
@@ -283,11 +296,15 @@ const ChatScreen = ({ route, navigation }: ChatScreenProps) =>  {
   return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      behavior={Platform.OS === "ios" ? "padding" : null}
       keyboardVerticalOffset={Platform.OS === "ios" ? 0 : -100}
-      
     >
-    
+     {/* <ScrollView
+      contentContainerStyle={{ flexGrow: 1 }}
+      keyboardShouldPersistTaps="handled"
+      nestedScrollEnabled={true}
+      scrollEnabled={false}
+    > */}
       <View style={chatStyles.container}>
 
         <View style={chatStyles.header}>
@@ -295,7 +312,7 @@ const ChatScreen = ({ route, navigation }: ChatScreenProps) =>  {
            <TouchableOpacity style={styles.circle}>
         <AntDesign name="arrowleft" color={'#FFFFFF'} size={20} onPress={()=>navigation.dispatch(CommonActions.goBack())} />
           </TouchableOpacity>
-          <Image source={require('../assets/images/chatProfile.png')} style={chatStyles.chatImage}/>
+          <Image source={{uri:match.imageUrls?.[0]}} style={chatStyles.chatImage}/>
             <View>
             <Text style={chatStyles.title}>{match.displayName}</Text>
           <Text style={chatStyles.lastScene}>Last Seen at 10:00 AM</Text>
@@ -353,7 +370,7 @@ const ChatScreen = ({ route, navigation }: ChatScreenProps) =>  {
 
         </View>
       </View>
-    
+      {/* </ScrollView> */}
     </KeyboardAvoidingView>
   );
 };

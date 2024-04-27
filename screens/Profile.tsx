@@ -1,4 +1,4 @@
-import React,{useState} from "react";
+import React,{useState,useEffect} from "react";
 import { getAuth, signOut } from "firebase/auth";
 import {
   View,
@@ -14,10 +14,10 @@ import {
 } from "react-native";
 import { Icon} from "../components";
 import { EvilIcons } from '@expo/vector-icons';
-import DEMO from "../assets/data/demo";
 import styles, { WHITE } from "../assets/styles";
 import { LinearGradient } from 'expo-linear-gradient';
 import app from "../config/firebaseConfig";
+import { getDatabase, ref,get} from "firebase/database";
 const { width } = Dimensions.get('window');
 const { height } = Dimensions.get('window');
 const halfScreenHeight = height * 0.5;
@@ -25,6 +25,12 @@ const Profile = ({ navigation }:any) => {
   
   const [modalVisible, setModalVisible] = useState(false);
   const auth = getAuth(app);
+  const database = getDatabase(app);
+  const [allUsers,setAllUsers]=useState([])
+  const [currentUserData,setCurrentUserData]=useState([])
+  console.log("The current user data is:",currentUserData)
+  const currentUser=auth?.currentUser;
+  // console.log("The All users are:",allUsers)
   const toggleModal = () => {
     setModalVisible(!modalVisible);
   };
@@ -36,13 +42,75 @@ const Logout=async()=>{
     console.log("error while logout")
   });
 }
+function AverageMatching(users) {
+  // Initialize sum and count variables
+  let sum = 0;
+  let count = 0;
+
+  // Iterate over each user in the array
+  users.forEach(user => {
+    // console.log("The score is:",user.score)
+    if (user.score) {
+      // Convert the score to a number and add it to the sum
+      sum += parseFloat(user.score);
+      // Increment the count
+      count++;
+    }
+  });
+
+  // Calculate the average score
+  const average = count > 0 ? sum / count : 0;
+
+  return average;
+}
+const averageScore = AverageMatching(allUsers);
+// console.log("The all users are:",allUsers)
+// console.log("Average Matching Score:", averageScore);
+useEffect(() => {
+  const usersRef = ref(database, `matchingScore/${auth.currentUser.uid}`);
+  const fetchUserData = async () => {
+    try {
+      const snapshot = await get(usersRef);
+      const userDataFromDB = [];
+      snapshot.forEach((childSnapshot) => {
+        const user = childSnapshot.val();
+        userDataFromDB.push(user);
+      });
+      setAllUsers(userDataFromDB);
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+    }
+  };
+  const usersRef1 = ref(database, 'users');
+  const fetchCurrentUserData= async () => {
+    try {
+        const snapshot = await get(usersRef1);
+        const users = [];
+        snapshot.forEach(childSnapshot => {
+            const user = childSnapshot.val();
+            if (user?.uid === currentUser?.uid) { 
+                users.push(user);
+            }
+        });
+        setCurrentUserData(users)
+       
+    } catch (error) {
+        console.error("Error fetching users:", error);
+    }
+  };
+  fetchCurrentUserData();
+  fetchUserData();
+}, []); 
   return (
     <SafeAreaView style={{flex:1,backgroundColor: '#010510', paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0 }}>
            <StatusBar backgroundColor="#010510" barStyle="light-content" translucent={true} />
         <View>
       
-         <ImageBackground
-         source={require('../assets/images/profile.png')}
+        {
+            currentUserData.map((item:any)=>{
+              return<>
+               <ImageBackground
+         source={{uri:item?.imageUrls[1]}}
         style={{width:width,height:halfScreenHeight}}
         resizeMode="cover"
         
@@ -113,11 +181,16 @@ const Logout=async()=>{
         end={{ x: 0, y: 1}}
       >
           <View style={styles.profile}>
-      <View>
-        <Image source={require('../assets/images/profile1.png')} />
+           {
+            currentUserData.map((item:any,index:any)=>{
+              return (
+                <>
+                 <View>
+        <Image style={{width:120,height:120,borderRadius:40,marginBottom:10}} source={{uri:item?.imageUrls[0]}} />
+     
       </View>
       <View style={{flexDirection:'row'}}>
-        <Text style={styles.text}>Julio Mitchell</Text>
+        <Text style={styles.text}>{item.displayName}</Text>
         <Text style={styles.text}>26</Text>
       </View>
       <View style={{flexDirection:'row'}}>
@@ -125,15 +198,22 @@ const Logout=async()=>{
         <Text style={styles.text}>New York</Text>
        
       </View>
+                </>
+              )
+            })
+           }
     </View>
   </LinearGradient>
          </ImageBackground>
      
+              </>
+            })
+        }
         </View>
         <View   style={{width:width,height:halfScreenHeight,backgroundColor:'#010510'}}>
           <View style={{flexDirection:'row',justifyContent:'center',width:width}}>
             <View style={styles.likeContainer}>
-              <Text style={styles.topText}>80%</Text>
+              <Text style={styles.topText}>{averageScore}%</Text>
               <Text style={styles.bottomText}>Matches</Text>
             </View>
             <View style={styles.likeContainer}>
@@ -148,35 +228,41 @@ const Logout=async()=>{
           <View style={{marginHorizontal:10}}>
          <View style={styles.aboutContainer}>
             
-            <Text style={styles.about}>About</Text>
+          {
+             currentUserData.map((item:any,index)=>{
+              return(<>
+                <Text style={styles.about}>About</Text>
             <View style={styles.flexContainer1}>
             <View style={styles.justifyRow}>
             <Image source={require('../assets/traveler.png')} style={styles.iconImage}/>
-             <Text style={styles.icon}>Traveler</Text>
+             <Text style={styles.icon}>{item?.interests[0]}</Text>
             </View>
             <View style={styles.Row}>
             <Image source={require('../assets/bikeRider.png')} style={styles.iconImage}/>
-             <Text style={styles.icon}>Bike Rider     </Text>
+             <Text style={styles.icon}>{item?.interests[1]} </Text>
             </View>
             <View  style={styles.Row}>
             <Image source={require('../assets/singer.png')} style={styles.iconImage}/>
-             <Text style={styles.icon}>Singer</Text>
+             <Text style={styles.icon}>{item?.interests[2]}</Text>
             </View>
             </View>
             <View  style={styles.flexContainer2}>
             <View style={styles.justifyRow}>
             <Image source={require('../assets/teaLover.png')} style={styles.iconImage}/>
-             <Text style={styles.icon}>Tea lover</Text>
+             <Text style={styles.icon}>{item.professional_interests[0]}</Text>
             </View>
             <View style={styles.Row}>
             <Image source={require('../assets/photographer.png')} style={styles.iconImage}/>
-             <Text style={styles.icon}>Photographer</Text>
+             <Text style={styles.icon}>{item.professional_interests[1]}</Text>
             </View>
             <View style={styles.Row}>
             <Image source={require('../assets/painter.png')} style={styles.iconImage}/>
-             <Text style={styles.icon}>Painter</Text>
+             <Text style={styles.icon}>{item.professional_interests[2]}</Text>
             </View>
             </View>
+              </>)
+             })
+          }
           
           </View>
           </View>
