@@ -114,9 +114,10 @@ useEffect(() => {
       const likesData = snapshot.val();
       const likesCount = likesData ? likesData.likes : 0; // Adjusted to access the likes count correctly
       setLikes(likesCount);
+      //this is the second function
     });
   }
-  
+
   fetchCurrentUserData();
   fetchUserData();
   fetchCurrentUserLikes();
