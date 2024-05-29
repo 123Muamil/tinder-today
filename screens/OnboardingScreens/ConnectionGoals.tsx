@@ -25,7 +25,8 @@ const ConnectionGoals= ({navigation}:any) => {
     else
     {
       dispatch({ type: 'ADD_VALUE', payload: { key: 'connections', value: value} });
-      navigation.navigate('finalthoughts')
+      // navigation.navigate('finalthoughts')
+      navigation.navigate('potentialmatches')
     }
   }
   const handleSliderChange = (newValue: number) => {

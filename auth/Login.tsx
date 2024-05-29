@@ -178,7 +178,7 @@ const visibilityStyle = {
                            <Image source={require('../assets/hideshow.png')}  style={visibilityStyle}/>
                            </TouchableOpacity>
                         </View>
-                        <TouchableOpacity style={styles.forgotContainer} onPress={()=>navigation.navigate('interests')}>
+                        <TouchableOpacity style={styles.forgotContainer} onPress={()=>navigation.navigate('forgot')}>
                             <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
                         </TouchableOpacity>
                         <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>

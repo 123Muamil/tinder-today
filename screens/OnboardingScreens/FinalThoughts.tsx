@@ -21,7 +21,7 @@ const FinalThoughts= ({navigation}:any) => {
     else
     {
       dispatch({ type: 'ADD_VALUE', payload: { key: 'final_thoughts', value: value} });
-      navigation.navigate('potentialmatches')
+      navigation.navigate('invitecircle')
     }
   }
   return (

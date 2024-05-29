@@ -17,7 +17,7 @@ import { EvilIcons } from '@expo/vector-icons';
 import styles, { WHITE } from "../assets/styles";
 import { LinearGradient } from 'expo-linear-gradient';
 import app from "../config/firebaseConfig";
-import { getDatabase, ref,get} from "firebase/database";
+import { getDatabase, ref,get, onValue} from "firebase/database";
 const { width } = Dimensions.get('window');
 const { height } = Dimensions.get('window');
 const halfScreenHeight = height * 0.5;
@@ -28,8 +28,10 @@ const Profile = ({ navigation }:any) => {
   const database = getDatabase(app);
   const [allUsers,setAllUsers]=useState([])
   const [currentUserData,setCurrentUserData]=useState([])
-  console.log("The current user data is:",currentUserData)
+  const [likes, setLikes] = useState(0);
+  // console.log("The current user data is:",likes)
   const currentUser=auth?.currentUser;
+  
   // console.log("The All users are:",allUsers)
   const toggleModal = () => {
     setModalVisible(!modalVisible);
@@ -98,9 +100,29 @@ useEffect(() => {
         console.error("Error fetching users:", error);
     }
   };
+  const fetchCurrentUserLikes = async () => {
+    const userLikesRef = ref(database, `likes/${currentUser?.uid}`);
+    onValue(userLikesRef, (snapshot) => {
+      const likesData = snapshot.val();
+      const likesCount = likesData ? likesData.likes : 0; // Adjusted to access the likes count correctly
+      setLikes(likesCount);
+    });
+  }
+  const fetchCurrentUserDislikes = async () => {
+    const userLikesRef = ref(database, `dislikes/${currentUser?.uid}`);
+    onValue(userLikesRef, (snapshot) => {
+      const likesData = snapshot.val();
+      const likesCount = likesData ? likesData.likes : 0; // Adjusted to access the likes count correctly
+      setLikes(likesCount);
+    });
+  }
+  
   fetchCurrentUserData();
   fetchUserData();
+  fetchCurrentUserLikes();
+  fetchCurrentUserDislikes()
 }, []); 
+
   return (
     <SafeAreaView style={{flex:1,backgroundColor: '#010510', paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0 }}>
            <StatusBar backgroundColor="#010510" barStyle="light-content" translucent={true} />
@@ -217,7 +239,7 @@ useEffect(() => {
               <Text style={styles.bottomText}>Matches</Text>
             </View>
             <View style={styles.likeContainer}>
-            <Text style={styles.topText}>150</Text>
+            <Text style={styles.topText}>{likes}</Text>
               <Text style={styles.bottomText}>Likes</Text>
             </View>
             <View style={styles.likeContainer}>

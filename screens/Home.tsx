@@ -5,18 +5,18 @@ const { height } = Dimensions.get("window");
 import  EvilIcons  from 'react-native-vector-icons/EvilIcons';
 import  Entypo  from 'react-native-vector-icons/Entypo';
 import AntDesign from 'react-native-vector-icons/AntDesign';
-import { getDatabase, ref,get,set, update } from "firebase/database";
+import { getDatabase, ref,get,set, update, push } from "firebase/database";
 import { getAuth } from 'firebase/auth';
 import app from "../config/firebaseConfig";
-import {  compareAllUsers } from "../config/MatchingAlgorithm";
+import {compareAllUsers } from "../config/MatchingAlgorithm";
 const Home = () => {
   const auth = getAuth(app);
   const database = getDatabase(app);
   const [udatedAllUsers,setUpdatedAllUsers]=useState([])
   const [currentUserData,setCurrentUserData]=useState({})
+  const [dislikeId,setDislikeID]=useState([]) as any
   const currentUser=auth?.currentUser;
     const swiperRef = useRef(null) as any;
-     const [showLikeButton, setShowLikeButton] = useState(false);
      const [allUsers, setAllUsers] = useState([]);
      useEffect(() => {
       const usersRef = ref(database, 'users');
@@ -35,6 +35,7 @@ const Home = () => {
         console.error("Error fetching users:", error);
     }
   };
+  
   const fetchCurrentUserData= async () => {
     try {
         const snapshot = await get(usersRef);
@@ -53,8 +54,26 @@ const Home = () => {
   };
   fetchUsersExceptCurrentUser();
   fetchCurrentUserData();
-  
+    
     }, []); 
+    // useEffect(()=>{
+    //   const usersRef = ref(database, 'dislikesProfiles');
+    //   const fetchData = async () => {
+    //     try {
+    //       const snapshot = await get(usersRef );
+    //       const dislikesDataArray = Object.values(snapshot.val());
+    //       const filteredUsers = allUsers.filter(user => {
+    //         // Check if user exists in dislikesDataArray
+    //         return !dislikesDataArray.some((dislike:any) => dislike.id === user.uid);
+    //       });
+    //       setAllUsers(filteredUsers)
+    //       // console.log("Dislikes data retrieved successfully:", dislikesDataArray);
+    //     } catch (error) {
+    //       console.error("Error retrieving dislikes data:", error);
+    //     }
+    //   };
+    //   fetchData();
+    // },[dislikeId])
     useEffect(() => {
       const matchScores = compareAllUsers(currentUserData, allUsers);
       const updatedUsers = [...allUsers];
@@ -110,8 +129,6 @@ const Home = () => {
     }, []); 
  
   const renderCard = (item:any) => {
- 
- 
     return (
       <View style={styles.card}>
         <Image source={{ uri: item?.imageUrls?.[0] }} style={styles.cardImage} />
@@ -140,38 +157,49 @@ const Home = () => {
             ))}
           </View>
                   </View>
-                  <TouchableOpacity style={styles.crossContainer} onPress={handleCrossButtonClick}>
+                  <TouchableOpacity style={styles.crossContainer} onPress={()=>handleCrossButtonClick(item.uid)}>
                     <Entypo name="cross" size={20} color="#FFFFFF" />
                   </TouchableOpacity>
-                  <TouchableOpacity style={styles.heartContainer} onPress={handleLikeButtonClick}>
+                  <TouchableOpacity style={styles.heartContainer} onPress={()=>handleLikeButtonClick(item.uid)}>
                     <AntDesign name="heart" size={20} color="#FFFFFF" />
                   </TouchableOpacity>
-                   {showLikeButton && (
-          <View
-            style={styles.heartContainer1}
-          
-          >
-            <AntDesign name="heart" size={20} color="#FFFFFF" />
-          </View>
-        )}
+                   
       </View>
     );
   };
-   const handleCrossButtonClick = () => {
+   const handleCrossButtonClick = async(userId:any) => {
+    const usersRef = ref(database, `dislikes/${userId}`); 
+    const userSnapshot = await get(usersRef);
+    const userData = userSnapshot.val();
+    const currentLikes = userData ? (userData.likes || 0) : 0;
+    await update(usersRef, { likes: currentLikes + 1 })
+      .then(() => {
+        console.log("Like stored successfully!");
+      })
+      .catch((error) => {
+        console.error("Error storing like: ", error);
+      });
+    if (swiperRef.current) {
+      swiperRef.current.swipeRight(); 
+    }
+  };
+  const handleLikeButtonClick = async(userId:any) => {
+    const usersRef = ref(database, `likes/${userId}`); 
+    const userSnapshot = await get(usersRef);
+    const userData = userSnapshot.val();
+    const currentLikes = userData ? (userData.likes || 0) : 0;
+    await update(usersRef, { likes: currentLikes + 1 })
+      .then(() => {
+        console.log("Like stored successfully!");
+      })
+      .catch((error) => {
+        console.error("Error storing like: ", error);
+      });
     if (swiperRef.current) {
       swiperRef.current.swipeLeft(); 
     }
   };
-    const handleLikeButtonClick = () => {
-      console.log("You like this text")
-      console.warn('Like')
-      setTimeout(() => {
-         if (swiperRef.current) {
-          setShowLikeButton(false)
-      swiperRef.current.swipeRight(); 
-    }
-      }, 1000);
-  };
+  
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar backgroundColor="#010510" barStyle="light-content" translucent={true} />
@@ -183,37 +211,78 @@ const Home = () => {
       </View>
 
       <Swiper
-        ref={swiperRef}
-        cards={allUsers}
-        renderCard={renderCard}
-        backgroundColor="transparent"
-        stackSize={3}
-        stackScale={5}
-        stackSeparation={15}
-        cardVerticalMargin={height * 0.05}
-        overlayLabels={{
-          right: {
-            title: "Like",
-            style: {
-              label: {
-                backgroundColor: "green",
-                borderColor: "green",
-                color: "white",
-                borderWidth: 1
-              },
-              wrapper: {
-                flexDirection: "column",
-                alignItems: "center",
-                justifyContent: "center"
-              }
-            }
-          }
-        }}
-        animateOverlayLabelsOpacity
-        animateCardOpacity
-        swipeBackCard
-        infinite={true}
-      />
+  ref={swiperRef}
+  cards={allUsers}
+  renderCard={renderCard}
+  backgroundColor="transparent"
+  stackSize={3}
+  stackScale={5}
+  stackSeparation={15}
+  cardVerticalMargin={height * 0.05}
+  overlayLabels={{
+    left: {
+      title: "❤️",
+      style: {
+        label: {
+          backgroundColor: "transparent",
+          color: "#FF0000",
+        },
+        wrapper: {
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center"
+        }
+      }
+    },
+    right: {
+      title: "❤️",
+      style: {
+        label: {
+          backgroundColor: "transparent",
+          color: "#FF0000",
+        },
+        wrapper: {
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center"
+        }
+      }
+    },
+    top: {
+      title: "❤️",
+      style: {
+        label: {
+          backgroundColor: "transparent",
+          color: "#FF0000",
+        },
+        wrapper: {
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center"
+        }
+      }
+    },
+    bottom: {
+      title: "❤️",
+      style: {
+        label: {
+          backgroundColor: "transparent",
+          color: "#FF0000",
+        },
+        wrapper: {
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center"
+        }
+      }
+    }
+  }}
+  animateOverlayLabelsOpacity
+  animateCardOpacity
+  swipeBackCard
+  infinite={true}
+/>
+
     </SafeAreaView>
   );
 };

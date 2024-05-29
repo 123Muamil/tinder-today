@@ -19,11 +19,6 @@ interface MyTestState {
 const Add_Photos:React.FC<MyTestProps> = ({ navigation }:any) => {
   const [data, setData] = useState<MyTestState['data']>([]);
   const {dispatch } = useStateContext() ;
-  // console.log("The images path are:",data)
-  // const imagesData = state.values.find(item => item.images);
-  // if (imagesData) {
-  //   console.log("Images data:", imagesData.images);
-  // }
   const render_item = (item: { image: string; key: string }) => {
     return (
       <View style={styles.showImage} key={item.key}>

@@ -9,6 +9,7 @@ const Stack = createNativeStackNavigator();
 const Tab = createMaterialBottomTabNavigator();
 import Login from "./auth/Login";
 import Signup from "./auth/Signup";
+import Forgotpassword from './auth/ForgotPassword'
 import {useDispatch ,useSelector} from 'react-redux';
 import Auth from "./service/Auth";
 import { setUser } from "./redux/reducer/user";
@@ -148,6 +149,7 @@ const index = () => {
       <Stack.Screen name="finalthoughts" component={FinalThoughts} options={{headerShown:false}}/>
       <Stack.Screen name="potentialmatches" component={PotentialMatches} options={{headerShown:false}}/>
       <Stack.Screen name="invitecircle" component={InviteCircle} options={{headerShown:false}}/>
+      <Stack.Screen name='forgot' component={Forgotpassword} options={{headerShown:false}}/>
       <Stack.Screen name="test" component={Test}/>
     </Stack.Navigator>
     </NavigationContainer>

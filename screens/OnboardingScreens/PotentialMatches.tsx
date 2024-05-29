@@ -11,6 +11,8 @@ import { showToast } from '../../redux/context/Toasts';
 import Toast from 'react-native-toast-message';
 const PotentialMatches= ({navigation}:any) => {
     const [selectedText, setSelectedText] = useState('Yes, show me my potential tribe!');
+    const newText=selectedText.split(',')
+    // console.log("The newText is:",newText[0]);
     const texts = ["Yes, show me my potential tribe!", "Not now, I'd like to explore on my own first."];
     const handleTextPress = (text:string) => {
       setSelectedText(text);
@@ -24,7 +26,15 @@ const PotentialMatches= ({navigation}:any) => {
      else
      {
        dispatch({ type: 'ADD_VALUE', payload: { key: 'potential_matches', value: selectedText} });
-       navigation.navigate('invitecircle')
+       if(newText[0]=="Yes")
+        {
+          navigation.navigate('finalthoughts')
+        }
+        else{
+  navigation.navigate('invitecircle')
+        }
+      //  navigation.navigate('invitecircle')
+      
      }
    }
   return (
@@ -43,14 +53,12 @@ const PotentialMatches= ({navigation}:any) => {
       <View style={styles.headerTextContainer} >
       <Text style={styles.headerText}>Potential Matches Preview</Text>
       </View>
-    
       </View>
       </LinearGradient>
       <View style={{flex:1}}>
        <ScrollView style={styles.content}>
        <StepIndicatorComponent currentStep={9}/>
        <View style={styles.container}>
-        
           <Text style={styles.text}>Any final thoughts you'd like to share to enhance your connections on Today?</Text>
      </View>
      <View style={{flex:1}}>
